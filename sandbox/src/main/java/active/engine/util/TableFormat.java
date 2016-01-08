@@ -25,8 +25,8 @@ public class TableFormat<T> {
         this.columns = new ArrayList<>();
     }
 
-    public static <T> TableFormat<T> withColumn(String title, Function<? super T, ?> value){
-        return new TableFormat<T>().column(title, value);
+    public static <T> TableFormat<T> with(){
+        return new TableFormat<T>();
     }
 
     public TableFormat<T> column(String title, Function<? super T, ?> value){

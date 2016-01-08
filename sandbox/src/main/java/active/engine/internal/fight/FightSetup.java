@@ -1,6 +1,7 @@
 package active.engine.internal.fight;
 
 import active.model.fight.Fight;
+import active.model.fight.FightController;
 import active.model.fight.Participant;
 
 import java.util.Collection;
@@ -20,10 +21,10 @@ public class FightSetup {
 
     public Stream<Participant> participants() { return this.participants.stream(); }
 
-    public Fight create(){
+    public FightController start(){
         DefaultFight fight = new DefaultFight();
         this.participants.forEach(fight::add);
-        return fight;
+        return new DefaultFightController(fight);
     }
 
 }
