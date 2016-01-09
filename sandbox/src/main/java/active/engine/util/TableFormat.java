@@ -34,17 +34,17 @@ public class TableFormat<T> {
         return this;
     }
 
-    public Stream<String> format(Stream<T> coll){
+    public Stream<String> format(Stream<? extends T> coll){
         Pair<Pattern, List<String[]>> data = toFormattableData(coll);
 
         return Stream.concat(
-            Stream.of(data.getA().format(this.columns.stream().map(c -> c.title).toArray(s -> new String[s])),
+            Stream.of(data.getA().format(this.columns.stream().map(c -> c.title).toArray((int s) -> new String[s])),
                       data.getA().getSeparatorLine()),
             data.getB().stream().map(fields -> data.getA().format(fields))
         );
     }
 
-    private Pair<Pattern, List<String[]>> toFormattableData(Stream<T> stream) {
+    private Pair<Pattern, List<String[]>> toFormattableData(Stream<? extends T> stream) {
         @SuppressWarnings("unchecked")
         Column<T>[] cols = columns.toArray(new Column[columns.size()]);
         int[] length = columns.stream().mapToInt(c -> c.title.length()).toArray();
@@ -58,10 +58,10 @@ public class TableFormat<T> {
                                              length[index] = value.length();
                                          }
                                          return value;
-                                     }).toArray(s -> new String[s])
+                                     }).toArray((int s) -> new String[s])
                              ).collect(Collectors.toList());
 
-        return new Pair(new Pattern(length), strings);
+        return new Pair<>(new Pattern(length), strings);
     }
 
 

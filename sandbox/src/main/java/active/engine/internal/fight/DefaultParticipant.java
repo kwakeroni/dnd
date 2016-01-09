@@ -1,10 +1,13 @@
 package active.engine.internal.fight;
 
-import active.model.action.Actor;
-import active.model.action.Hittable;
+import active.model.cat.Actor;
+import active.model.cat.Hittable;
 import active.model.die.D20;
+import active.model.fight.IsActor;
+import active.model.fight.IsTarget;
 import active.model.fight.Participant;
 import active.model.die.Roll;
+import active.model.value.Modifier;
 import active.model.value.Score;
 
 import java.util.Optional;
@@ -13,11 +16,11 @@ import java.util.OptionalInt;
 /**
  * @author Maarten Van Puymbroeck
  */
-public class DefaultParticipant implements Participant {
+public final class DefaultParticipant implements Participant, IsActor, IsTarget {
 
     private final String name;
-    private final Actor actor;
-    private final Hittable target;
+    private final Optional<Actor> actor;
+    private final Optional<Hittable> target;
     private Score initiative;
 
     public static Participant ofUntouchable(String name, Actor actor){
@@ -28,14 +31,14 @@ public class DefaultParticipant implements Participant {
         return new DefaultParticipant(name, null, target);
     }
 
-    public static <P extends Object & Actor & Hittable> Participant ofCharacter(String name, P character){
-        return new DefaultParticipant(name, character, character);
+    public static <P extends Object & Actor & Hittable> Participant ofCharacter(P character){
+        return new DefaultParticipant(character.getName(), character, character);
     }
 
     private DefaultParticipant(String name, Actor actor, Hittable target) {
         this.name = name;
-        this.actor = actor;
-        this.target = target;
+        this.actor = Optional.ofNullable(actor);
+        this.target = Optional.ofNullable(target);
     }
 
     @Override
@@ -45,27 +48,31 @@ public class DefaultParticipant implements Participant {
 
     @Override
     public boolean isActor() {
-        return this.actor != null;
+        return this.actor.isPresent();
     }
 
     @Override
-    public Actor asActor(){
-        if (this.actor == null){
-            throw new IllegalStateException(toString() + " is not an actor");
-        }
+    public Actor actor() {
+        return asActor().get();
+    }
+
+    @Override
+    public Optional<Actor> asActor(){
         return this.actor;
     }
 
     @Override
     public boolean isTarget() {
-        return this.target != null;
+        return this.target.isPresent();
     }
 
     @Override
-    public Hittable asTarget(){
-        if (this.target == null){
-            throw new IllegalStateException(toString() + " is not a target");
-        }
+    public Hittable target() {
+        return asTarget().get();
+    }
+
+    @Override
+    public Optional<Hittable> asTarget(){
         return this.target;
     }
 
@@ -83,8 +90,7 @@ public class DefaultParticipant implements Participant {
     public void setInitiative(Roll<D20> roll) {
         setInitiative(
             roll.modify(
-                asActor()
-                    .getInitiativeModifier()));
+                asActor().map(Actor::getInitiativeModifier).orElse(Modifier.of(0))));
     }
 
     @Override

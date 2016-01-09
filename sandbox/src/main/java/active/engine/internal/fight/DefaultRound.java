@@ -1,6 +1,7 @@
 package active.engine.internal.fight;
 
-import active.model.action.Actor;
+import active.model.cat.Actor;
+import active.model.fight.IsActor;
 import active.model.fight.Participant;
 import active.model.fight.Round;
 import active.model.fight.Turn;
@@ -14,17 +15,17 @@ import java.util.stream.Stream;
 /**
  * @author Maarten Van Puymbroeck
  */
-public class DefaultRound implements Round {
+public final class DefaultRound implements Round {
 
-    private final ListIterator<ActorTurn> turns;
+    private final ListIterator<? extends ActorTurn<?>> turns;
     /**
      * @invar currentTurn == null || currentTurn.turn != null
      */
-    private ActorTurn currentTurn;
+    private ActorTurn<?> currentTurn;
 
-    public DefaultRound(Stream<Participant> actors){
+    public <AP extends Participant & IsActor> DefaultRound(Stream<AP> actors){
         this.turns =
-            actors.map(actor -> new ActorTurn(actor))
+            actors.map(actor -> new ActorTurn<AP>(actor))
                   .collect(Collectors.toList())
                   .listIterator();
     }
@@ -52,7 +53,7 @@ public class DefaultRound implements Round {
         if (this.currentTurn != null){
             throw new IllegalStateException("Turn already active");
         }
-        ActorTurn next = turns.next();
+        ActorTurn<?> next = turns.next();
         next.start();
         this.currentTurn = next;
         return this.currentTurn.turn;
@@ -67,11 +68,11 @@ public class DefaultRound implements Round {
 
     }
 
-    private static /* value */ class ActorTurn {
-        final Participant actor;
+    private static /* value */ class ActorTurn<AP extends Participant & IsActor> {
+        final AP actor;
         Turn turn;
 
-        public ActorTurn(Participant actor) {
+        public ActorTurn(AP actor) {
             this.actor = actor;
         }
 

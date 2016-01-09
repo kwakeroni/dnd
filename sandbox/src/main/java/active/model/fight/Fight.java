@@ -1,7 +1,7 @@
 package active.model.fight;
 
-import active.model.action.Actor;
-import active.model.action.Hittable;
+import active.model.cat.Actor;
+import active.model.cat.Hittable;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -13,9 +13,9 @@ public interface Fight {
 
     public void add(Participant participant);
 
-    public Stream<Participant> getActors();
+    public <AP extends Participant & IsActor> Stream<AP> getActors();
 
-    public Stream<Participant> getTargets();
+    public <TP extends Participant & IsTarget> Stream<TP> getTargets();
 
     public Optional<? extends Round> getCurrentRound();
 
@@ -26,8 +26,6 @@ public interface Fight {
     }
 
 
-    public default Optional<Participant> getCurrentActor(){
-        return getCurrentRound().flatMap(Round::getCurrentActor);
-    }
+    public <AP extends Participant & IsActor> Optional<AP> getCurrentActor();
 
 }

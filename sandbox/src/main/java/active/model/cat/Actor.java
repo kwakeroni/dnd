@@ -1,11 +1,11 @@
-package active.model.action;
+package active.model.cat;
 
 import active.model.value.Modifier;
 
 /**
  * @author Maarten Van Puymbroeck
  */
-public interface Actor {
+public interface Actor extends Named {
 
     public Modifier getInitiativeModifier();
 

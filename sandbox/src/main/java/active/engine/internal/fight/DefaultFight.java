@@ -1,6 +1,9 @@
 package active.engine.internal.fight;
 
+import active.engine.util.Streamable;
 import active.model.fight.Fight;
+import active.model.fight.IsActor;
+import active.model.fight.IsTarget;
 import active.model.fight.Participant;
 import active.model.fight.Round;
 
@@ -13,7 +16,7 @@ import java.util.stream.Stream;
 /**
  * @author Maarten Van Puymbroeck
  */
-public class DefaultFight implements Fight {
+public final class DefaultFight implements Fight {
 
     private ActorSet actors = new ActorSet();
     private Collection<Participant> targets = new TreeSet<>(Comparator.comparing(Participant::getName));
@@ -32,13 +35,18 @@ public class DefaultFight implements Fight {
     }
 
     @Override
-    public Stream<Participant> getActors() {
-        return this.actors.stream();
+    public <AP extends Participant & IsActor> Stream<AP> getActors() {
+        return ((Streamable<AP>) this.actors).stream();
     }
 
     @Override
-    public Stream<Participant> getTargets() {
-        return this.targets.stream();
+    public <AP extends Participant & IsActor> Optional<AP> getCurrentActor() {
+        return getCurrentRound().flatMap(Round::getCurrentActor);
+    }
+
+    @Override
+    public <TP extends Participant & IsTarget> Stream<TP> getTargets() {
+        return ((Collection<TP>) this.targets).stream();
     }
 
     @Override

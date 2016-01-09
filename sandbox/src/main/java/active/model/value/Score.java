@@ -1,7 +1,5 @@
 package active.model.value;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 /**
  * @author Maarten Van Puymbroeck
  */
@@ -19,6 +17,10 @@ public final /* value */ class Score implements Comparable<Score> {
 
     public int toInt(){
         return this.score;
+    }
+    
+    public Score minus(Score other){
+        return Score.of(this.score - other.score);
     }
 
     @Override

@@ -26,7 +26,7 @@ public interface Round {
     /**
      * @return The currently active actor.
      */
-    public default Optional<Participant> getCurrentActor() {
+    public default  <AP extends Participant & IsActor> Optional<AP> getCurrentActor() {
         return getCurrentTurn().map(Turn::getActor);
     }
 

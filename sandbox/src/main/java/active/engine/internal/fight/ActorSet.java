@@ -1,6 +1,8 @@
 package active.engine.internal.fight;
 
-import active.model.action.Actor;
+import active.engine.util.Streamable;
+import active.model.cat.Actor;
+import active.model.fight.IsActor;
 import active.model.fight.Participant;
 import active.model.value.Modifier;
 import active.model.value.Score;
@@ -9,24 +11,39 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Stream;
+
 import static java.util.Comparator.*;
 
 /**
  * @author Maarten Van Puymbroeck
  */
-class ActorSet {
+class ActorSet implements Streamable<Participant> {
 
-    private SortedSet<ActorChain> actors = new TreeSet<>(
-                comparing(ActorChain::getLeader,
-                comparing(ActorSet::getRequiredInitiative).reversed()
-           .thenComparing(Participant::asActor,
-                comparing(Actor::getInitiativeModifier).reversed()
-        .thenComparingInt(System::identityHashCode)
-                )));
+    private SortedSet<ActorChain> actors = treeset();
+    
+    private <AP extends Participant & IsActor> TreeSet<ActorChain> treeset(){
+        return new TreeSet<ActorChain>(c());
+    }
+    
+    private <AP extends Participant & IsActor> Comparator<ActorChain> c(){
+        return Comparator. comparing(         ActorChain::getLeader, 
+                Comparator.<AP, Score> comparing(           ActorSet::getRequiredInitiative ).reversed()
+                .thenComparing( c(p -> p.actor()), 
+                comparing(              Actor::getInitiativeModifier ).reversed()
+                .thenComparingInt(     System::identityHashCode)
+                ));
+    }
+    
+    private <AP extends Participant & IsActor> Function<AP, ComparableActor> c(Function<AP, Actor> f){
+        
+        return (Function<AP, ComparableActor>) (Function<?,?>) f;
+    }
+    private static interface ComparableActor extends Actor, Comparable<Actor> { }
 
-    public void add(Participant participant){
-        this.actors.add(new ActorChain(participant));
+    public <AP extends Participant & IsActor> void add(Participant participant){
+        this.actors.add(new ActorChain((AP) (IsActor) participant));
     }
 
     public Stream<Participant> stream(){
@@ -38,11 +55,11 @@ class ActorSet {
 
         private ParticipantChain chain;
 
-        public ActorChain(Participant actor){
+        public <AP extends Participant & IsActor> ActorChain(AP actor){
             this.chain = new SingletonParticipantChain(actor);
         }
 
-        public void addFollower(Participant parent, Participant follower){
+        public <AP extends Participant & IsActor> void addFollower(AP parent, AP follower){
             this.chain = this.chain.addFollower(parent, follower);
         }
 
@@ -50,12 +67,12 @@ class ActorSet {
             return this.chain.contains(participant);
         }
 
-        public Stream<Participant> getParticipants(){
-            return this.chain.getParticipants();
+        public <AP extends Participant & IsActor> Stream<AP> getParticipants(){
+            return (Stream<AP>) this.chain.getParticipants();
         }
 
-        public Participant getLeader(){
-            return this.chain.getLeader();
+        public <AP extends Participant & IsActor> AP getLeader(){
+            return (AP) this.chain.getLeader();
         }
 
     }

@@ -5,6 +5,6 @@ package active.model.fight;
  */
 public interface Turn {
 
-    public Participant getActor();
+    public <AP extends Participant & IsActor> AP getActor();
 
 }

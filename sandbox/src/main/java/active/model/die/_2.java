@@ -10,7 +10,7 @@ public class _2<D extends Die> extends _X<D> {
     }
 
     static <D extends Die> _2<D> instance(D d){
-        return new _2(d);
+        return new _2<D>(d);
     }
 
 }
