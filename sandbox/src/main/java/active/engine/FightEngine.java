@@ -1,9 +1,10 @@
 package active.engine;
 
+import active.engine.event.EventBroker;
 import active.engine.internal.action.DefaultHit;
 import active.engine.internal.creature.DefaultCreature;
 import active.engine.internal.fight.DefaultParticipant;
-import active.engine.internal.fight.FightSetup;
+import active.engine.internal.fight.BattleField;
 import active.engine.util.TableFormat;
 import active.model.cat.Actor;
 import active.model.cat.Hittable;
@@ -35,7 +36,9 @@ public class FightEngine {
         return null;
     }
     public static void main(String[] args){
-        FightSetup setup = new FightSetup();
+        new EventBroker().onEvent().forEach(e -> System.out.println(e));
+        
+        BattleField setup = new BattleField();
 
         Participant p1 = DefaultParticipant.ofCharacter(new DefaultCreature("Fred", Score.of(18), Modifier.of(3)));
         Participant p2 = DefaultParticipant.ofCharacter(new DefaultCreature("George", Score.of(18), Modifier.of(3)));
@@ -43,13 +46,11 @@ public class FightEngine {
         setup.add(p1);
         setup.add(p2);
 
-
-
         setup.participants()
              .filter(Participant::isActor)
              .forEach(p -> p.setInitiative(Roll.D20()));
 
-        FightController fight = setup.start();
+        FightController fight = setup.startFight();
 
         Round round;
         Turn turn;
