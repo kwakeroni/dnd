@@ -1,5 +1,7 @@
 package active.model.fight;
 
+import active.model.cat.Actor;
+
 import java.util.Optional;
 
 /**
@@ -26,7 +28,7 @@ public interface Round {
     /**
      * @return The currently active actor.
      */
-    public default  <AP extends Participant & IsActor> Optional<AP> getCurrentActor() {
+    public default  <AP extends Participant & Actor> Optional<AP> getCurrentActor() {
         return getCurrentTurn().map(Turn::getActor);
     }
 

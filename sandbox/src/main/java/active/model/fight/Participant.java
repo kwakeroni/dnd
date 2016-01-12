@@ -16,11 +16,11 @@ public interface Participant extends Named {
 
     public boolean isActor();
 
-    public Optional<Actor> asActor();
+    public <AP extends Participant & Actor> Optional<AP> asActor();
 
     public boolean isTarget();
 
-    public Optional<Hittable> asTarget();
+    public <HP extends Participant & Hittable> Optional<HP> asTarget();
 
     public Optional<Score> getInitiative();
 

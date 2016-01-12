@@ -7,14 +7,14 @@ import java.util.stream.Stream;
 /**
  * @author Maarten Van Puymbroeck
  */
-interface ParticipantChain {
+interface ParticipantChain<P extends Participant> {
 
-    public ParticipantChain addFollower(Participant parent, Participant follower);
+    public ParticipantChain addFollower(Participant parent, P follower);
 
     public boolean contains(Participant participant);
 
-    public Stream<Participant> getParticipants();
+    public Stream<P> getParticipants();
 
-    public Participant getLeader();
+    public P getLeader();
 
 }

@@ -154,12 +154,6 @@ public interface Channel<T> {
     void forEach(Consumer<? super T> action);
 
     static <T, ChannelEntry extends Channel<T> & Consumer<T>> ChannelEntry newInstance(){
-        return (ChannelEntry)
-        new Pipeline<T, T>() {
-            @Override
-            public void accept(T t) {
-                    forward(t);
-            }
-        };
+        return (ChannelEntry) new ChannelAdapter<T>() { };
     }
 }

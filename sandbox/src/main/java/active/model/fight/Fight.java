@@ -13,9 +13,9 @@ public interface Fight {
 
     public void add(Participant participant);
 
-    public <AP extends Participant & IsActor> Stream<AP> getActors();
+    public <AP extends Participant & Actor> Stream<AP> getActors();
 
-    public <TP extends Participant & IsTarget> Stream<TP> getTargets();
+    public  <HP extends Participant & Hittable> Stream<HP> getTargets();
 
     public Optional<? extends Round> getCurrentRound();
 
@@ -26,6 +26,8 @@ public interface Fight {
     }
 
 
-    public <AP extends Participant & IsActor> Optional<AP> getCurrentActor();
+    public default <AP extends Participant & Actor> Optional<AP> getCurrentActor(){
+        return getCurrentRound().flatMap(Round::getCurrentActor);
+    }
 
 }

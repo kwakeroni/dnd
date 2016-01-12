@@ -1,5 +1,7 @@
 package active.model.fight;
 
+import active.model.fight.event.FightEventStream;
+
 /**
  * @author Maarten Van Puymbroeck
  */
@@ -27,5 +29,7 @@ public interface FightController {
      * Ends the turn of the current actor.
      */
     public void endTurn();
+
+    public FightEventStream onEvent();
 
 }

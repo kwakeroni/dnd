@@ -10,16 +10,16 @@ import java.util.stream.Stream;
 /**
  * @author Maarten Van Puymbroeck
  */
-class DefaultParticipantChain implements ParticipantChain {
+class DefaultParticipantChain<P extends Participant> implements ParticipantChain<P> {
 
-    private final List<Participant> participants = new ArrayList<>(2);
+    private final List<P> participants = new ArrayList<>(2);
 
-    public DefaultParticipantChain(Participant parent){
+    public DefaultParticipantChain(P parent){
         this.participants.add(parent);
     }
 
     @Override
-    public ParticipantChain addFollower(Participant parent, Participant follower) {
+    public ParticipantChain addFollower(Participant parent, P follower) {
         int index = Lists.indexOf(participants, parent).orElseThrow(() -> new IllegalStateException());
 
         this.participants.add(index+1, follower);
@@ -32,12 +32,12 @@ class DefaultParticipantChain implements ParticipantChain {
         return this.participants.contains(participant);
     }
 
-    public Stream<Participant> getParticipants(){
+    public Stream<P> getParticipants(){
         return this.participants.stream();
     }
 
     @Override
-    public Participant getLeader() {
+    public P getLeader() {
         return this.participants.get(0);
     }
 }

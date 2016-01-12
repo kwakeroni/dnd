@@ -1,9 +1,12 @@
 package active.engine.internal.fight;
 
+import active.engine.channel.ChannelAdapter;
+import active.engine.event.Event;
+import active.engine.event.EventBrokerSupport;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
-import active.model.fight.Round;
 import active.model.fight.Turn;
+import active.model.fight.event.FightEventStream;
 
 /**
  * @author Maarten Van Puymbroeck
@@ -11,9 +14,17 @@ import active.model.fight.Turn;
 public class DefaultFightController implements FightController {
 
     private DefaultFight fight;
+    private EventBrokerSupport<? extends FightEventStream> broker;
+
 
     public DefaultFightController(DefaultFight fight) {
+
+        class DefaultFightEventStream extends ChannelAdapter<Event> implements FightEventStream {
+
+        }
+
         this.fight = fight;
+        this.broker = EventBrokerSupport.of(() -> new DefaultFightEventStream());
     }
 
     @Override
@@ -57,6 +68,9 @@ public class DefaultFightController implements FightController {
         round.startTurn();
 
     }
-    
-    
+
+    @Override
+    public FightEventStream onEvent() {
+        return this.broker.onEvent();
+    }
 }

@@ -1,9 +1,9 @@
 package active.engine.internal.fight;
 
 import active.engine.util.Streamable;
+import active.model.cat.Actor;
+import active.model.cat.Hittable;
 import active.model.fight.Fight;
-import active.model.fight.IsActor;
-import active.model.fight.IsTarget;
 import active.model.fight.Participant;
 import active.model.fight.Round;
 
@@ -23,30 +23,32 @@ public final class DefaultFight implements Fight {
     private DefaultRound currentRound;
     private int roundCount;
 
+
     @Override
     public void add(Participant participant) {
         if (participant.isActor()){
-            this.actors.add(participant);
+            this.actors.add(participant.asActor().get());
         }
 
         if (participant.isTarget()){
-            this.targets.add(participant);
+            this.targets.add(participant.asTarget().get());
         }
     }
 
+
     @Override
-    public <AP extends Participant & IsActor> Stream<AP> getActors() {
+    public <AP extends Participant & Actor> Stream<AP> getActors() {
         return ((Streamable<AP>) this.actors).stream();
     }
 
     @Override
-    public <AP extends Participant & IsActor> Optional<AP> getCurrentActor() {
+    public <AP extends Participant & Actor> Optional<AP> getCurrentActor() {
         return getCurrentRound().flatMap(Round::getCurrentActor);
     }
 
     @Override
-    public <TP extends Participant & IsTarget> Stream<TP> getTargets() {
-        return ((Collection<TP>) this.targets).stream();
+    public <TP extends Participant & Hittable> Stream<TP> getTargets() {
+        return ((Collection<TP>) (Collection<? extends Participant>) this.targets).stream();
     }
 
     @Override

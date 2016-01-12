@@ -7,16 +7,16 @@ import java.util.stream.Stream;
 /**
  * @author Maarten Van Puymbroeck
  */
-class SingletonParticipantChain implements ParticipantChain {
+class SingletonParticipantChain<P extends Participant> implements ParticipantChain<P> {
 
-    private Participant participant;
+    private P participant;
 
-    public SingletonParticipantChain(Participant participant) {
+    public SingletonParticipantChain(P participant) {
         this.participant = participant;
     }
 
     @Override
-    public ParticipantChain addFollower(Participant parent, Participant follower) {
+    public ParticipantChain addFollower(Participant parent, P follower) {
         return new DefaultParticipantChain(this.participant).addFollower(parent, follower);
     }
 
@@ -26,12 +26,12 @@ class SingletonParticipantChain implements ParticipantChain {
     }
 
     @Override
-    public Stream<Participant> getParticipants() {
+    public Stream<P> getParticipants() {
         return Stream.of(this.participant);
     }
 
     @Override
-    public Participant getLeader() {
+    public P getLeader() {
         return participant;
     }
 }

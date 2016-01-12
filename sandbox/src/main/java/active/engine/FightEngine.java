@@ -1,43 +1,31 @@
 package active.engine;
 
-import active.engine.event.EventBroker;
 import active.engine.internal.action.DefaultHit;
 import active.engine.internal.creature.DefaultCreature;
-import active.engine.internal.fight.DefaultParticipant;
 import active.engine.internal.fight.BattleField;
+import active.engine.internal.fight.DefaultParticipant;
 import active.engine.util.TableFormat;
-import active.model.cat.Actor;
 import active.model.cat.Hittable;
-import active.model.creature.Creature;
+import active.model.die.Roll;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
-import active.model.fight.IsActor;
-import active.model.fight.IsTarget;
 import active.model.fight.Participant;
-import active.model.die.D20;
-import active.model.die.Roll;
 import active.model.fight.Round;
 import active.model.fight.Turn;
 import active.model.value.Modifier;
 import active.model.value.Score;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import static active.model.die.Dice.*;
 /**
  * @author Maarten Van Puymbroeck
  */
 public class FightEngine {
-    public static <TP extends Participant & IsTarget> Stream<TP> getTargets(){
-        return null;
-    }
+
     public static void main(String[] args){
-        new EventBroker().onEvent().forEach(e -> System.out.println(e));
-        
+
         BattleField setup = new BattleField();
 
         Participant p1 = DefaultParticipant.ofCharacter(new DefaultCreature("Fred", Score.of(18), Modifier.of(3)));
@@ -52,6 +40,10 @@ public class FightEngine {
 
         FightController fight = setup.startFight();
 
+        fight.onEvent()
+             .turnEnded()
+             .forEach(turn -> dump(null, fight));
+
         Round round;
         Turn turn;
 
@@ -64,7 +56,7 @@ public class FightEngine {
             fight.nextTurn();
             target(fight).hit(DefaultHit.of(5));
             System.out.println("-- " + fight.getState().getCurrentActor().map(Participant::getName).get() + " hits " + target(fight).getName());
-            dump(null, fight);
+            // dump(null, fight);
         }
 
 
@@ -98,7 +90,7 @@ public class FightEngine {
                 )
             //.column(turn  , p -> (p.isActor()) ? (fight.getCurrentActor().map(current -> (Boolean) (current == p)).orElse(Boolean.FALSE) ? "*" : "") : "-")
             .column("Name", p -> p.getName())
-            .column("HP", p -> p.asTarget().map(Hittable::getHP).map(Object::toString).orElse("-"))
+            .column("HP", p -> p.asTarget().map(h -> h.getHP()).map(Object::toString).orElse("-"))
             ;
 
         if (header != null) System.out.println(header);
@@ -112,7 +104,7 @@ public class FightEngine {
             TableFormat.<Participant> with()
                 .column("Name", p -> p.getName())
                 .column("INI", p -> p.getInitiative().map(Object::toString).orElse(""))
-                .column("INI*", p -> p.asActor().map(Actor::getInitiativeModifier).map(Object::toString).orElse(""));
+                .column("INI*", p -> p.asActor().map(a -> a.getInitiativeModifier()).map(Object::toString).orElse(""));
 
     private static <T, U> Function<T, U> to(U constant){
         return (T t) -> constant;
