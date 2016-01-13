@@ -135,6 +135,8 @@ public interface Channel<T> {
      */
     Channel<T> skip(long n);
 
+    Channel<T> peek(Consumer<? super T> action);
+
     /**
      * Performs an action for each element of this stream.
      *
@@ -153,7 +155,7 @@ public interface Channel<T> {
      */
     void forEach(Consumer<? super T> action);
 
-    static <T, ChannelEntry extends Channel<T> & Consumer<T>> ChannelEntry newInstance(){
-        return (ChannelEntry) new ChannelAdapter<T>() { };
+    static <T> ChannelEntry<T> newInstance(){
+        return new ChannelAdapter<T>() { };
     }
 }

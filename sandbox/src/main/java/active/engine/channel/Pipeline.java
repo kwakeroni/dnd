@@ -22,22 +22,27 @@ abstract class Pipeline<E_IN, E_OUT> implements Consumer<E_IN>, Channel<E_OUT> {
 
     @Override
     public Channel<E_OUT> filter(Predicate<? super E_OUT> predicate) {
-        return forwardTo(new FilterOp<E_OUT>(predicate));
+        return forwardTo(new FilterOp<>(predicate));
     }
 
     @Override
     public <R> Channel<R> map(Function<? super E_OUT, ? extends R> mapper) {
-        return forwardTo(new MapOp<E_OUT, R>(mapper));
+        return forwardTo(new MapOp<>(mapper));
     }
 
     @Override
     public Channel<E_OUT> limit(long maxSize) {
-        return forwardTo(new LimitOp<E_OUT>(maxSize));
+        return forwardTo(new LimitOp<>(maxSize));
     }
 
     @Override
     public Channel<E_OUT> skip(long n) {
-        return forwardTo(new SkipOp<E_OUT>(n));
+        return forwardTo(new SkipOp<>(n));
+    }
+
+    @Override
+    public Channel<E_OUT> peek(Consumer<? super E_OUT> action) {
+        return forwardTo(new PeekOp<>(action));
     }
 
     @Override

@@ -6,6 +6,7 @@ import active.engine.event.EventBrokerSupport;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
 import active.model.fight.Turn;
+import active.model.fight.event.FightAware;
 import active.model.fight.event.FightEventStream;
 
 /**
@@ -14,7 +15,7 @@ import active.model.fight.event.FightEventStream;
 public class DefaultFightController implements FightController {
 
     private DefaultFight fight;
-    private EventBrokerSupport<? extends FightEventStream> broker;
+    private EventBrokerSupport<Event, ? extends FightEventStream> broker;
 
 
     public DefaultFightController(DefaultFight fight) {
@@ -24,7 +25,14 @@ public class DefaultFightController implements FightController {
         }
 
         this.fight = fight;
-        this.broker = EventBrokerSupport.of(() -> new DefaultFightEventStream());
+        this.broker = EventBrokerSupport.newInstance()
+                                        .supplying(() -> new DefaultFightEventStream())
+                                        .preparing((DefaultFightEventStream stream) -> (FightEventStream) stream.peek(
+                                            event -> {
+                                                if (event instanceof FightAware)
+                                                    ((FightAware) event).setFight(this.fight);
+                                            }
+                                        ));
     }
 
     @Override
