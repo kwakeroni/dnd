@@ -9,7 +9,7 @@ import java.util.stream.Stream;
  */
 interface ParticipantChain<P extends Participant> {
 
-    public ParticipantChain addFollower(Participant parent, P follower);
+    public ParticipantChain<P> addFollower(Participant parent, P follower);
 
     public boolean contains(Participant participant);
 

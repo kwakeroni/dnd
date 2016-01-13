@@ -1,17 +1,13 @@
 package active.model.fight.event;
 
 import active.engine.channel.Channel;
-import active.engine.event.Event;
+import active.model.event.Event;
+import active.model.event.EventStream;
 
 /**
  * @author Maarten Van Puymbroeck
  */
-public interface FightEventStream extends Channel<Event> {
-
-    public default <E extends Event> Channel<E> ofType(Class<E> type){
-        return filter(event -> type.isInstance(event))
-                .map( event -> type.cast(event));
-    }
+public interface FightEventStream extends EventStream {
 
     public default Channel<FightStarted> fightStarted(){
         return ofType(FightStarted.class);

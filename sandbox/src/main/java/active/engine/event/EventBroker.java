@@ -1,15 +1,16 @@
 package active.engine.event;
 
 import active.engine.channel.Channel;
+import active.model.event.Event;
+import active.model.event.EventStream;
 
 /**
  * @author Maarten Van Puymbroeck
  */
-public interface EventBroker<E extends Event, C extends Channel<? super E>> {
+public interface EventBroker<ES extends EventStream> {
 
-    public void fire(E event);
+    public void fire(Event event);
 
-    public C onEvent();
+    public ES on();
 
-    public <X extends E> Channel<X> onEvent(Class<X> type);
 }

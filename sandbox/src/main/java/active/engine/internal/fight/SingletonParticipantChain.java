@@ -16,8 +16,8 @@ class SingletonParticipantChain<P extends Participant> implements ParticipantCha
     }
 
     @Override
-    public ParticipantChain addFollower(Participant parent, P follower) {
-        return new DefaultParticipantChain(this.participant).addFollower(parent, follower);
+    public ParticipantChain<P> addFollower(Participant parent, P follower) {
+        return new DefaultParticipantChain<>(this.participant).addFollower(parent, follower);
     }
 
     @Override

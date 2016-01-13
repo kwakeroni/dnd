@@ -1,8 +1,11 @@
 package active.engine.internal.fight;
 
+import java.util.function.Supplier;
+
 import active.engine.channel.ChannelAdapter;
-import active.engine.event.Event;
+import active.engine.event.EventBroker;
 import active.engine.event.EventBrokerSupport;
+import active.model.event.Event;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
 import active.model.fight.Turn;
@@ -14,25 +17,14 @@ import active.model.fight.event.FightEventStream;
  */
 public class DefaultFightController implements FightController {
 
-    private DefaultFight fight;
-    private EventBrokerSupport<Event, ? extends FightEventStream> broker;
+    private final DefaultFight fight;
+    private final EventBroker<FightEventStream> broker;
 
 
-    public DefaultFightController(DefaultFight fight) {
-
-        class DefaultFightEventStream extends ChannelAdapter<Event> implements FightEventStream {
-
-        }
+    public DefaultFightController(DefaultFight fight, EventBroker<FightEventStream> broker) {
 
         this.fight = fight;
-        this.broker = EventBrokerSupport.newInstance()
-                                        .supplying(() -> new DefaultFightEventStream())
-                                        .preparing((DefaultFightEventStream stream) -> (FightEventStream) stream.peek(
-                                            event -> {
-                                                if (event instanceof FightAware)
-                                                    ((FightAware) event).setFight(this.fight);
-                                            }
-                                        ));
+        this.broker = broker;
     }
 
     @Override
@@ -78,7 +70,7 @@ public class DefaultFightController implements FightController {
     }
 
     @Override
-    public FightEventStream onEvent() {
-        return this.broker.onEvent();
+    public FightEventStream on() {
+        return this.broker.on();
     }
 }

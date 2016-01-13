@@ -1,7 +1,9 @@
 package active.engine.internal.fight;
 
+import active.engine.event.EventBroker;
 import active.engine.event.EventBrokerSupport;
 import active.model.cat.Actor;
+import active.model.event.Event;
 import active.model.fight.Participant;
 import active.model.fight.Round;
 import active.model.fight.Turn;
@@ -25,16 +27,16 @@ public final class DefaultRound implements Round {
      */
     private ActorTurn<?> currentTurn;
 
-    private final Optional<EventBrokerSupport> broker;
+    private final Optional<EventBroker<?>> broker;
 
     public <AP extends Participant & Actor> DefaultRound(Stream<AP> actors){
         this(actors, Optional.empty());
     }
-    public <AP extends Participant & Actor> DefaultRound(Stream<AP> actors, EventBrokerSupport broker){
+    public <AP extends Participant & Actor> DefaultRound(Stream<AP> actors, EventBroker<?> broker){
         this(actors, Optional.of(broker));
     }
 
-    private <AP extends Participant & Actor> DefaultRound(Stream<AP> actors, Optional<EventBrokerSupport> broker){
+    public <AP extends Participant & Actor> DefaultRound(Stream<AP> actors, Optional<EventBroker<?>> broker){
         this.turns =
             actors.map(actor -> new ActorTurn<AP>(actor))
                   .collect(Collectors.toList())
@@ -84,7 +86,7 @@ public final class DefaultRound implements Round {
         this.currentTurn.end();
         this.currentTurn = null;
 
-        this.broker.ifPresent(broker -> broker.fire(new TurnEnded(this, this.currentTurn.turn)));
+        this.broker.ifPresent(broker -> broker.fire(new TurnEnded(this, turn)));
     }
 
     private static /* value */ class ActorTurn<AP extends Participant & Actor> {

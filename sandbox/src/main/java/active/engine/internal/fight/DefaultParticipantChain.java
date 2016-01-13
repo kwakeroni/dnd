@@ -19,7 +19,7 @@ class DefaultParticipantChain<P extends Participant> implements ParticipantChain
     }
 
     @Override
-    public ParticipantChain addFollower(Participant parent, P follower) {
+    public ParticipantChain<P> addFollower(Participant parent, P follower) {
         int index = Lists.indexOf(participants, parent).orElseThrow(() -> new IllegalStateException());
 
         this.participants.add(index+1, follower);

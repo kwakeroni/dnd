@@ -1,4 +1,4 @@
-package active.engine.event;
+package active.model.event;
 
 public interface Event {
 

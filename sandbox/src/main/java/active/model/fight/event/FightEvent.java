@@ -1,6 +1,6 @@
 package active.model.fight.event;
 
-import active.engine.event.Event;
+import active.model.event.Event;
 import active.model.fight.Fight;
 
 /**

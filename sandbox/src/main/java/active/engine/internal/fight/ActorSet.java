@@ -49,14 +49,14 @@ class ActorSet <ActPar extends Participant & Actor> implements Streamable<ActPar
 
     private static class ActorChain {
 
-        private ParticipantChain chain;
+        private ParticipantChain<?> chain;
 
         public <AP extends Participant & Actor> ActorChain(AP actor){
-            this.chain = new SingletonParticipantChain(actor);
+            this.chain = new SingletonParticipantChain<>(actor);
         }
 
         public <AP extends Participant & Actor> void addFollower(AP parent, AP follower){
-            this.chain = this.chain.addFollower(parent, follower);
+            this.chain = ((ParticipantChain<AP>) this.chain).addFollower(parent, follower);
         }
 
         public boolean contains(Participant participant){

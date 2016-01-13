@@ -1,8 +1,10 @@
 package active.engine.internal.fight;
 
+import active.engine.event.EventBrokerSupport;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
 import active.model.fight.Participant;
+import active.model.fight.event.FightEventStream;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,9 +24,21 @@ public class BattleField {
     public Stream<Participant> participants() { return this.participants.stream(); }
 
     public FightController startFight(){
-        DefaultFight fight = new DefaultFight();
+        
+        EventBrokerSupport<FightEventStream> broker = EventBrokerSupport.newInstance()
+                .supplying((source) -> () -> source.event())
+//                .preparing((DefaultFightEventStream stream) -> (FightEventStream) stream.peek(
+//                    event -> {
+//                        if (event instanceof FightAware)
+//                            ((FightAware) event).setFight(this.fight);
+//                    }
+//                ))
+                ;
+
+        DefaultFight fight = new DefaultFight(broker);
         this.participants.forEach(fight::add);
-        return new DefaultFightController(fight);
+
+        return new DefaultFightController(fight, broker);
     }
 
 }

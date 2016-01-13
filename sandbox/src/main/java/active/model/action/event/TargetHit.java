@@ -1,6 +1,6 @@
 package active.model.action.event;
 
-import active.engine.event.Event;
+import active.model.event.Event;
 
 /**
  * @author Maarten Van Puymbroeck

@@ -30,6 +30,6 @@ public interface FightController {
      */
     public void endTurn();
 
-    public FightEventStream onEvent();
+    public FightEventStream on();
 
 }

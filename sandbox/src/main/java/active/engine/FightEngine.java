@@ -40,7 +40,7 @@ public class FightEngine {
 
         FightController fight = setup.startFight();
 
-        fight.onEvent()
+        fight.on()
              .turnEnded()
              .forEach(turn -> dump(null, fight));
 
@@ -66,7 +66,6 @@ public class FightEngine {
         return fight.getState().getTargets()
                     .filter(isSameAs(fight.getState().getCurrentActor()).negate())
                     .findAny()
-                    .flatMap(Participant::asTarget)
                     .get();
     }
 
@@ -85,7 +84,7 @@ public class FightEngine {
     private static void dump(String header, Fight fight){
         String turn = "Turn " + fight.getCurrentTurnNumber();
         TableFormat<Participant> format =  TableFormat.<Participant> with()
-                .column(turn, p->  p.asActor().map(actor -> fight.getCurrentActor().flatMap(Participant::asActor).filter(current -> current == actor).map(to("*")).orElse("")).orElse("-")
+                .column(turn, p->  p.asActor().map(actor -> fight.getCurrentActor().filter(current -> current == actor).map(to("*")).orElse("")).orElse("-")
                     
                 )
             //.column(turn  , p -> (p.isActor()) ? (fight.getCurrentActor().map(current -> (Boolean) (current == p)).orElse(Boolean.FALSE) ? "*" : "") : "-")

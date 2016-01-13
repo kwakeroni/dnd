@@ -1,5 +1,6 @@
 package active.engine.internal.fight;
 
+import active.engine.event.EventBroker;
 import active.engine.util.Streamable;
 import active.model.cat.Actor;
 import active.model.cat.Hittable;
@@ -18,10 +19,24 @@ import java.util.stream.Stream;
  */
 public final class DefaultFight implements Fight {
 
-    private ActorSet actors = new ActorSet();
+    private ActorSet<?> actors = new ActorSet<>();
     private Collection<Participant> targets = new TreeSet<>(Comparator.comparing(Participant::getName));
     private DefaultRound currentRound;
     private int roundCount;
+    private final Optional<EventBroker<?>> broker;
+    
+    public DefaultFight(){
+        this(Optional.empty());
+    }
+    
+    public DefaultFight(EventBroker<?> broker){
+        this(Optional.of(broker));
+    }
+    
+    public DefaultFight(Optional<EventBroker<?>> broker){
+        this.broker = broker;
+    }
+    
 
 
     @Override
@@ -65,7 +80,7 @@ public final class DefaultFight implements Fight {
         if (this.currentRound != null){
             throw new IllegalStateException("Previous round unfinished");
         }
-        this.currentRound = new DefaultRound(getActors());
+        this.currentRound = new DefaultRound(getActors(), this.broker);
         roundCount++;
         return this.currentRound;
     }
