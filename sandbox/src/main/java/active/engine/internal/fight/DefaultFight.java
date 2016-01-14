@@ -23,7 +23,7 @@ public final class DefaultFight implements Fight {
     private Collection<Participant> targets = new TreeSet<>(Comparator.comparing(Participant::getName));
     private DefaultRound currentRound;
     private int roundCount;
-    private final Optional<EventBroker<?>> broker;
+    private Optional<EventBroker<?>> broker;
     
     public DefaultFight(){
         this(Optional.empty());
@@ -33,11 +33,14 @@ public final class DefaultFight implements Fight {
         this(Optional.of(broker));
     }
     
-    public DefaultFight(Optional<EventBroker<?>> broker){
+    private DefaultFight(Optional<EventBroker<?>> broker){
         this.broker = broker;
     }
-    
 
+    public void setBroker(EventBroker<?> newBroker){
+        broker.ifPresent(old -> { throw new IllegalStateException("Broker already present"); });
+        this.broker = Optional.of(newBroker);
+    }
 
     @Override
     public void add(Participant participant) {

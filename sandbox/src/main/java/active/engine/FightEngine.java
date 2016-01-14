@@ -1,10 +1,15 @@
 package active.engine;
 
-import active.engine.internal.action.DefaultHit;
+import active.engine.internal.action.HitAction;
+import active.engine.internal.cat.DecoratedDescription;
+import active.engine.internal.cat.DefaultDescription;
+import active.engine.internal.effect.DefaultHit;
 import active.engine.internal.creature.DefaultCreature;
 import active.engine.internal.fight.BattleField;
 import active.engine.internal.fight.DefaultParticipant;
 import active.engine.util.TableFormat;
+import active.model.action.Action;
+import active.model.cat.Description;
 import active.model.cat.Hittable;
 import active.model.die.Roll;
 import active.model.fight.Fight;
@@ -26,6 +31,40 @@ public class FightEngine {
 
     public static void main(String[] args){
 
+        DecoratedDescription.Builder log = log();
+
+
+        BattleField battleField = setup();
+        FightController fight = battleField.startFight();
+
+        fight.on().turnEnded()
+                  .forEach(turn -> dump(null, turn.getFight()));
+
+        fight.on().action()
+                  .forEach(action -> {
+                      System.out.println(log.newDescription().append(action.getAction()).toString());
+                  });
+
+
+        dump("Actors", fight.getState().getActors());
+        dump("Targets", fight.getState().getTargets());
+        dump("Start", fight);
+
+        for (int i=0; i<4; i++){
+            fight.nextTurn();
+
+            Action<? super Fight> action = new HitAction(fight.getState().getCurrentActor().get(), target(fight));
+
+            fight.execute(action);
+        }
+
+        fight.endTurn();
+        fight.endRound();
+
+
+    }
+
+    private static BattleField setup(){
         BattleField setup = new BattleField();
 
         Participant p1 = DefaultParticipant.ofCharacter(new DefaultCreature("Fred", Score.of(18), Modifier.of(3)));
@@ -38,28 +77,18 @@ public class FightEngine {
              .filter(Participant::isActor)
              .forEach(p -> p.setInitiative(Roll.D20()));
 
-        FightController fight = setup.startFight();
+        return setup;
+    }
 
-        fight.on()
-             .turnEnded()
-             .forEach(turn -> dump(null, fight));
-
-        Round round;
-        Turn turn;
-
-        dump("Actors", fight.getState().getActors());
-        dump("Targets", fight.getState().getTargets());
-
-        dump("Start", fight);
-
-        for (int i=0; i<4; i++){
-            fight.nextTurn();
-            target(fight).hit(DefaultHit.of(5));
-            System.out.println("-- " + fight.getState().getCurrentActor().map(Participant::getName).get() + " hits " + target(fight).getName());
-            // dump(null, fight);
-        }
-
-
+    private static DecoratedDescription.Builder log(){
+        return DecoratedDescription.builder()
+                .intercept(Action.class)
+                    .thenPrefixWith("-- ")
+                .intercept(Participant.class)
+                    .thenWrapBetween(blue(), black())
+                .intercept(Score.class)
+                    .thenWrapBetween(red(), black())
+                    ;
     }
     
     private static Hittable target(FightController fight){
@@ -69,6 +98,8 @@ public class FightEngine {
                     .get();
     }
 
+
+
     private static void dump(String header, Stream<? extends Participant> participants){
 
         System.out.println();
@@ -76,6 +107,14 @@ public class FightEngine {
 
         PARTICIPANT_INFO.format(participants)
                         .forEach(System.out::println);
+    }
+
+    private static void dump(Action action){
+        if (action instanceof HitAction){
+            HitAction hit = (HitAction) action;
+            System.out.println("-- " + hit.getActor().getName() + " hits " + hit.getTarget().getName());
+        }
+
     }
 
     private static void dump(String header, FightController fight){
@@ -97,6 +136,8 @@ public class FightEngine {
 
         format.format( Stream.<Participant> concat(fight.getActors(), fight.getTargets().filter(p -> ! p.isActor())) )
               .forEach(System.out::println);
+
+        System.out.println();
     }
 
     private static TableFormat<Participant> PARTICIPANT_INFO =
@@ -115,5 +156,27 @@ public class FightEngine {
     
     private static <T> Predicate<Optional<? super T>> hasSameAs(Optional<? extends T> optional){
         return (Optional<? super T> opt) -> opt.isPresent() && optional.isPresent() && opt.get() == optional.get(); 
+    }
+
+        private static final char ANSI_ESC = 27;
+    private static final String ansi(String control){
+        return ANSI_ESC + "[" + control;
+    }
+    private static final String black(){
+        return ansi("30m");
+    }
+    private static final String red(){
+        return ansi("31m");
+    }
+
+    private static final String blue(){
+        return ansi("34m");
+    }
+
+    private static final String grey(){
+        return ansi("37m");
+    }
+    private static final String grey(String str){
+        return grey() + str + black();
     }
 }

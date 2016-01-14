@@ -1,5 +1,6 @@
 package active.model.fight;
 
+import active.model.action.Action;
 import active.model.fight.event.FightEventStream;
 
 /**
@@ -31,5 +32,7 @@ public interface FightController {
     public void endTurn();
 
     public FightEventStream on();
+
+    public void execute(Action<? super Fight> action);
 
 }

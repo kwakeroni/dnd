@@ -1,7 +1,6 @@
 package active.engine.internal.creature;
 
-import active.model.action.Hit;
-import active.model.cat.Named;
+import active.model.effect.Hit;
 import active.model.creature.Creature;
 import active.model.value.Modifier;
 import active.model.value.Score;

@@ -1,9 +1,12 @@
 package active.model.value;
 
+import active.model.cat.Describable;
+import active.model.cat.Description;
+
 /**
  * @author Maarten Van Puymbroeck
  */
-public final /* value */ class Score implements Comparable<Score> {
+public final /* value */ class Score implements Describable, Comparable<Score> {
 
     private final int score;
 
@@ -27,6 +30,11 @@ public final /* value */ class Score implements Comparable<Score> {
     public int compareTo(Score o) {
         return (this.score == o.score)? 0 :
                     (this.score < o.score)? -1 : 1;
+    }
+
+    @Override
+    public void describe(Description description) {
+        description.append(String.valueOf(this.score));
     }
 
     @Override

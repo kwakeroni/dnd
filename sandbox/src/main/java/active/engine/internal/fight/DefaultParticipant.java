@@ -1,6 +1,7 @@
 package active.engine.internal.fight;
 
-import active.model.action.Hit;
+import active.model.cat.Description;
+import active.model.effect.Hit;
 import active.model.cat.Actor;
 import active.model.cat.Hittable;
 import active.model.die.D20;
@@ -10,7 +11,6 @@ import active.model.value.Modifier;
 import active.model.value.Score;
 
 import java.util.Optional;
-import java.util.OptionalInt;
 
 /**
  * @author Maarten Van Puymbroeck
@@ -101,4 +101,6 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
     public void hit(Hit hit) {
         target.hit(hit);
     }
+
+
 }

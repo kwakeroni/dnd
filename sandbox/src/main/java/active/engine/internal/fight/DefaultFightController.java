@@ -5,10 +5,12 @@ import java.util.function.Supplier;
 import active.engine.channel.ChannelAdapter;
 import active.engine.event.EventBroker;
 import active.engine.event.EventBrokerSupport;
+import active.model.action.Action;
 import active.model.event.Event;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
 import active.model.fight.Turn;
+import active.model.fight.event.ActionExecuted;
 import active.model.fight.event.FightAware;
 import active.model.fight.event.FightEventStream;
 
@@ -72,5 +74,11 @@ public class DefaultFightController implements FightController {
     @Override
     public FightEventStream on() {
         return this.broker.on();
+    }
+
+    @Override
+    public void execute(Action<? super Fight> action) {
+        action.execute(this.fight);
+        this.broker.fire(new ActionExecuted(action));
     }
 }

@@ -1,10 +1,9 @@
-package active.engine.internal.action;
+package active.engine.internal.effect;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import active.engine.internal.effect.DefaultDamage;
-import active.model.action.Hit;
+import active.model.effect.Hit;
 import active.model.effect.Damage;
 import active.model.value.Score;
 

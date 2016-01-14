@@ -32,6 +32,29 @@ public abstract class EventBrokerSupport<ES extends EventStream> implements Even
         };
     }
 
+    public EventBrokerSupport<ES> preparing(Consumer<Event> modifier) {
+        return new Adapter<ES, EventBrokerSupport<ES>>(this) {
+
+            @Override
+            public void fire(Event event) {
+                modifier.accept(event);
+                super.fire( event );
+            }
+
+        };
+    }
+
+    public EventBrokerSupport<ES> preparing(Function<Event, Event> mapper) {
+        return new Adapter<ES, EventBrokerSupport<ES>>(this) {
+
+            @Override
+            public void fire(Event event) {
+                super.fire( mapper.apply(event) );
+            }
+
+        };
+    }
+
 
     
     private static class Root extends EventBrokerSupport<EventStream> {
@@ -72,8 +95,11 @@ public abstract class EventBrokerSupport<ES extends EventStream> implements Even
         public void fire(Event event) {
             delegate.fire(event);           
         }
-        
-        
+
+        @Override
+        public NES on() {
+            return (NES) delegate.on();
+        }
     }
 
 

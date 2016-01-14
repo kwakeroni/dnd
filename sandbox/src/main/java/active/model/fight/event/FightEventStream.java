@@ -1,7 +1,6 @@
 package active.model.fight.event;
 
 import active.engine.channel.Channel;
-import active.model.event.Event;
 import active.model.event.EventStream;
 
 /**
@@ -23,6 +22,10 @@ public interface FightEventStream extends EventStream {
 
     public default Channel<TurnStarted> turnStarted(){
         return ofType(TurnStarted.class);
+    }
+
+    public default Channel<ActionExecuted> action() {
+        return ofType(ActionExecuted.class);
     }
 
 }
