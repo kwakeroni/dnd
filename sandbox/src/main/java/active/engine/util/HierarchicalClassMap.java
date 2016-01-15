@@ -1,7 +1,5 @@
 package active.engine.util;
 
-import org.apache.cxf.jaxrs.provider.ProviderFactory;
-
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;

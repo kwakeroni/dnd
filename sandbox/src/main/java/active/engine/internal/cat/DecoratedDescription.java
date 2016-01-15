@@ -13,7 +13,7 @@ import java.util.function.Function;
  */
 public class DecoratedDescription implements Description {
 
-    private final HierarchicalClassMap<Describable, BiConsumer<DecoratedDescription,  Describable>> decorators;
+    private final HierarchicalClassMap<Describable, BiConsumer<DecoratedDescription, ? extends Describable>> decorators;
     private final Description delegate;
 
     private DecoratedDescription(){
@@ -24,7 +24,8 @@ public class DecoratedDescription implements Description {
         this(delegate, new HierarchicalClassMap<>(Describable.class));
     }
 
-    private DecoratedDescription(Description delegate, HierarchicalClassMap decorators){
+    private DecoratedDescription(Description delegate, HierarchicalClassMap<Describable, 
+                                 BiConsumer<DecoratedDescription, ? extends Describable>> decorators){
         this.decorators = decorators;
         this.delegate = delegate;
     }
@@ -116,7 +117,7 @@ public class DecoratedDescription implements Description {
                 return then((description, d) -> description.append(dependent.apply(d)));
             }
 
-            public DecorationBuilder thenDescribe(Function<D, Describable> dependent){
+            public DecorationBuilder<D> thenDescribe(Function<D, Describable> dependent){
                 return then((description, d) -> description.append(dependent.apply(d)));
             }
 

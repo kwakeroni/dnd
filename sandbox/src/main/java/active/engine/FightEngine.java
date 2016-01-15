@@ -5,12 +5,14 @@ import active.engine.internal.cat.DecoratedDescription;
 import active.engine.internal.cat.DefaultDescription;
 import active.engine.internal.effect.DefaultHit;
 import active.engine.internal.creature.DefaultCreature;
+import active.engine.internal.creature.DefaultParty;
 import active.engine.internal.fight.BattleField;
 import active.engine.internal.fight.DefaultParticipant;
 import active.engine.util.TableFormat;
 import active.model.action.Action;
 import active.model.cat.Description;
 import active.model.cat.Hittable;
+import active.model.creature.Party;
 import active.model.die.Roll;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
@@ -67,11 +69,8 @@ public class FightEngine {
     private static BattleField setup(){
         BattleField setup = new BattleField();
 
-        Participant p1 = DefaultParticipant.ofCharacter(new DefaultCreature("Fred", Score.of(18), Modifier.of(3)));
-        Participant p2 = DefaultParticipant.ofCharacter(new DefaultCreature("George", Score.of(18), Modifier.of(3)));
-
-        setup.add(p1);
-        setup.add(p2);
+        setup.add(getMyParty());
+        setup.add(getOtherParty());
 
         setup.participants()
              .filter(Participant::isActor)
@@ -79,6 +78,21 @@ public class FightEngine {
 
         return setup;
     }
+    
+    private static Party getMyParty(){
+        DefaultParty party = new DefaultParty();
+        party.add(new DefaultCreature("Fred", Score.of(18), Modifier.of(3)));
+        party.add(new DefaultCreature("George", Score.of(18), Modifier.of(3)));
+        return party;
+    }
+    
+    private static Party getOtherParty(){
+        DefaultParty party = new DefaultParty();
+        party.add(new DefaultCreature("Lucius", Score.of(22), Modifier.of(2)));
+        party.add(new DefaultCreature("Bellatrix", Score.of(16), Modifier.of(4)));
+        return party;
+    }
+    
 
     private static DecoratedDescription.Builder log(){
         return DecoratedDescription.builder()
@@ -109,7 +123,7 @@ public class FightEngine {
                         .forEach(System.out::println);
     }
 
-    private static void dump(Action action){
+    private static void dump(Action<?> action){
         if (action instanceof HitAction){
             HitAction hit = (HitAction) action;
             System.out.println("-- " + hit.getActor().getName() + " hits " + hit.getTarget().getName());

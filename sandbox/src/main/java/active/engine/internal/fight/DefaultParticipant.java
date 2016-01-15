@@ -30,7 +30,7 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
         return new DefaultParticipant(name, null, target);
     }
 
-    public static <P extends Object & Actor & Hittable> Participant ofCharacter(P character){
+    public static <P extends Object & Actor & Hittable> Participant ofCreature(P character){
         return new DefaultParticipant(character.getName(), character, character);
     }
 
