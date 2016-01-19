@@ -41,4 +41,8 @@ public final /* value */ class Score implements Describable, Comparable<Score> {
     public String toString() {
         return String.valueOf(score);
     }
+    
+    public static Score fromString(String value){
+        return of(Integer.parseInt(value));
+    }
 }

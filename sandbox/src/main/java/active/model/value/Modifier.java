@@ -31,5 +31,8 @@ public final /* value */ class Modifier implements Comparable<Modifier> {
             ((modifier < 0)? "-" : "+") + String.valueOf(modifier);
     }
 
+    public static Modifier fromString(String value){
+        return Modifier.of(Integer.parseInt(value));
+    }
 
 }

@@ -9,6 +9,7 @@ import active.engine.internal.creature.DefaultParty;
 import active.engine.internal.fight.BattleField;
 import active.engine.internal.fight.DefaultParticipant;
 import active.engine.util.TableFormat;
+import active.io.xml.XMLOutput;
 import active.model.action.Action;
 import active.model.cat.Description;
 import active.model.cat.Hittable;
@@ -31,7 +32,7 @@ import java.util.stream.Stream;
  */
 public class FightEngine {
 
-    public static void main(String[] args){
+    public static void main(String[] args)  throws Exception{
 
         DecoratedDescription.Builder log = log();
 
@@ -63,7 +64,7 @@ public class FightEngine {
         fight.endTurn();
         fight.endRound();
 
-
+        XMLOutput.writeToFile(getMyParty(), "./target/myparty.xml");
     }
 
     private static BattleField setup(){
@@ -80,14 +81,14 @@ public class FightEngine {
     }
     
     private static Party getMyParty(){
-        DefaultParty party = new DefaultParty();
+        DefaultParty party = new DefaultParty("ours");
         party.add(new DefaultCreature("Fred", Score.of(18), Modifier.of(3)));
         party.add(new DefaultCreature("George", Score.of(18), Modifier.of(3)));
         return party;
     }
     
     private static Party getOtherParty(){
-        DefaultParty party = new DefaultParty();
+        DefaultParty party = new DefaultParty("the others");
         party.add(new DefaultCreature("Lucius", Score.of(22), Modifier.of(2)));
         party.add(new DefaultCreature("Bellatrix", Score.of(16), Modifier.of(4)));
         return party;
