@@ -1,5 +1,6 @@
 package active.engine;
 
+import active.engine.gui.swing.EngineWindow;
 import active.engine.internal.action.HitAction;
 import active.engine.internal.cat.DecoratedDescription;
 import active.engine.internal.cat.DefaultDescription;
@@ -34,6 +35,8 @@ public class FightEngine {
 
     public static void main(String[] args)  throws Exception{
 
+        System.setProperty("sun.java2d.d3d", "false");
+        
         DecoratedDescription.Builder log = log();
 
 
@@ -65,6 +68,8 @@ public class FightEngine {
         fight.endRound();
 
         XMLOutput.writeToFile(getMyParty(), "./target/myparty.xml");
+        
+        new EngineWindow(fight.getState().getActors()).show();
     }
 
     private static BattleField setup(){
