@@ -3,6 +3,8 @@ package active.engine.gui.swing;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.event.WindowStateListener;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.swing.JDialog;
@@ -13,19 +15,24 @@ import javax.swing.WindowConstants;
 
 import active.engine.util.gui.swing.WindowAdapter;
 import active.model.cat.Named;
+import active.model.event.Datum;
+import active.model.fight.Participant;
 
 public class EngineWindow {
 
     private JFrame frame;
-    
-    public EngineWindow(Stream<? extends Named> characters){
+
+    public EngineWindow(Datum<? extends Stream<? extends Participant>> characters){
+        this(characters, p -> new ParticipantLine(p));
+    }
+
+    public <C extends Named> EngineWindow(Datum<? extends Stream<? extends C>> characters, Function<C, ? extends CharacterLine<? super C>> lineFactory){
         this.frame = new JFrame();
         this.frame.setTitle("Dungeons and Dragons 3.5 Fight Assistant");
         this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        this.frame.addWindowListener( WindowAdapter.closing( event -> showCloseDialog() ));
+        this.frame.addWindowListener(WindowAdapter.closing(event -> showCloseDialog()));
 
-        this.frame.getContentPane().add(new JLabel("TEST"));
-        this.frame.getContentPane().add(new CharacterList(characters));
+        this.frame.getContentPane().add(new CharacterList<>(characters, lineFactory).component());
     }
     
     public void show(){

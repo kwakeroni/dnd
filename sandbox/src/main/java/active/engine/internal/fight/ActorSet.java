@@ -26,7 +26,7 @@ class ActorSet <ActPar extends Participant & Actor> implements Streamable<ActPar
     
     private <AP extends Participant & Actor> Comparator<ActorChain> c(){
         return Comparator.<ActorChain, AP> comparing(ActorChain::getLeader,
-               Comparator.<AP, Score>      comparing(ActorSet::getRequiredInitiative).reversed()
+               Comparator.<AP, Score>      comparing(ActorSet::getRequiredInitiative)
                                       .thenComparing(a -> a.getInitiativeModifier()).reversed()
                                       .thenComparingInt(System::identityHashCode)
         );

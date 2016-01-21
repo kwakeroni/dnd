@@ -6,14 +6,14 @@ import java.util.function.Predicate;
 
 abstract class Pipeline<E_IN, E_OUT> implements Consumer<E_IN>, Channel<E_OUT> {
     
-    private Consumer<? super E_OUT> nextOp = null;
+    private Consumer<? super E_OUT> nextOp = DO_NOTHING;
     
     protected void forward(E_OUT toNextOp){
         this.nextOp.accept(toNextOp);
     }
     
-    private <R, C extends Consumer<E_OUT> & Channel<R>> Channel<R> forwardTo(C destination){
-        if (this.nextOp != null){
+    private <R, C extends Consumer<E_OUT>> C forwardTo(C destination){
+        if (this.nextOp != DO_NOTHING){
             throw new IllegalStateException("Channel has already been operated upon");
         }
         this.nextOp = destination;
@@ -49,5 +49,17 @@ abstract class Pipeline<E_IN, E_OUT> implements Consumer<E_IN>, Channel<E_OUT> {
     public void forEach(Consumer<? super E_OUT> action) {
         this.nextOp = action;
     }
-    
+
+    @Override
+    public Switch<E_OUT> choice() {
+        return forwardTo(new SwitchOp<>());
+    }
+
+    private static final Consumer<Object> DO_NOTHING = new Consumer<Object>() {
+        @Override
+        public void accept(Object o) {
+
+        }
+    };
+
 }

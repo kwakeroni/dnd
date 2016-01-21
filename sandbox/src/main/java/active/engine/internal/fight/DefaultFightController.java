@@ -9,6 +9,7 @@ import active.model.action.Action;
 import active.model.event.Event;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
+import active.model.fight.Participant;
 import active.model.fight.Turn;
 import active.model.fight.event.ActionExecuted;
 import active.model.fight.event.FightAware;
@@ -27,6 +28,11 @@ public class DefaultFightController implements FightController {
 
         this.fight = fight;
         this.broker = broker;
+    }
+
+    @Override
+    public void addParticipant(Participant p) {
+        this.fight.add(p);
     }
 
     @Override

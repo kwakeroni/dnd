@@ -27,7 +27,7 @@ public final class DefaultRound implements Round {
      */
     private ActorTurn<?> currentTurn;
 
-    private final Optional<EventBroker<?>> broker;
+    private final Optional<? extends EventBroker<?>> broker;
 
     public <AP extends Participant & Actor> DefaultRound(Stream<AP> actors){
         this(actors, Optional.empty());
@@ -36,7 +36,7 @@ public final class DefaultRound implements Round {
         this(actors, Optional.of(broker));
     }
 
-    public <AP extends Participant & Actor> DefaultRound(Stream<AP> actors, Optional<EventBroker<?>> broker){
+    public <AP extends Participant & Actor> DefaultRound(Stream<AP> actors, Optional<? extends EventBroker<?>> broker){
         this.turns =
             actors.map(actor -> new ActorTurn<AP>(actor))
                   .collect(Collectors.toList())

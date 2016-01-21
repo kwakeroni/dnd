@@ -155,7 +155,17 @@ public interface Channel<T> {
      */
     void forEach(Consumer<? super T> action);
 
+    Switch<T> choice();
+
     static <T> ChannelEntry<T> newInstance(){
-        return new ChannelAdapter<T>() { };
+        return new ChannelEntryOp<T>();
     }
+
+    public static interface Switch<T> {
+        public Channel<T> when(Predicate<? super T> predicate);
+        public Channel<T> otherwise();
+        public Channel<T> afterwards();
+    }
+
+
 }

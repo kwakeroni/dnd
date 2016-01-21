@@ -2,6 +2,8 @@ package active.model.fight;
 
 import active.model.cat.Actor;
 import active.model.cat.Hittable;
+import active.model.fight.event.FightData;
+import active.model.fight.event.FightEventStream;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -11,11 +13,14 @@ import java.util.stream.Stream;
  */
 public interface Fight {
 
-    public void add(Participant participant);
-
     public <AP extends Participant & Actor> Stream<AP> getActors();
 
     public  <HP extends Participant & Hittable> Stream<HP> getTargets();
+
+    public default Stream<Participant> getParticipants(){
+        return Stream.concat( this.getActors(),
+                              this.getTargets().filter(p -> ! p.isActor()) );
+    }
 
     public Optional<? extends Round> getCurrentRound();
 
@@ -29,5 +34,7 @@ public interface Fight {
     public default <AP extends Participant & Actor> Optional<AP> getCurrentActor(){
         return getCurrentRound().flatMap(Round::getCurrentActor);
     }
+
+    public FightEventStream on();
 
 }

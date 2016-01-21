@@ -1,6 +1,7 @@
 package active.model.fight;
 
 import active.model.action.Action;
+import active.model.fight.event.FightData;
 import active.model.fight.event.FightEventStream;
 
 /**
@@ -9,6 +10,8 @@ import active.model.fight.event.FightEventStream;
 public interface FightController {
 
     public Fight getState();
+
+    public void addParticipant(Participant p);
 
     /**
      * Advances to the next turn in the fight.
@@ -34,5 +37,10 @@ public interface FightController {
     public FightEventStream on();
 
     public void execute(Action<? super Fight> action);
+
+    public default FightData getData(){
+        return new FightData(this.getState());
+    }
+
 
 }

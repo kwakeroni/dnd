@@ -24,6 +24,7 @@ import active.model.fight.Turn;
 import active.model.value.Modifier;
 import active.model.value.Score;
 
+import javax.swing.*;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -41,10 +42,22 @@ public class FightEngine {
 
 
         BattleField battleField = setup();
+
+
         FightController fight = battleField.startFight();
 
+        new EngineWindow(fight.getData().participants()).show();
+
+
+        Participant p = DefaultParticipant.ofCreature(new DefaultCreature("Billy", Score.of(25), Modifier.of(4)));
+        p.setInitiative(Roll.D20());
+        fight.addParticipant(p);
+
+
         fight.on().turnEnded()
-                  .forEach(turn -> dump(null, turn.getFight()));
+
+                  .peek(turn -> dump(null, turn.getFight()))
+                  .peek(turn -> JOptionPane.showConfirmDialog(null, "Wait"));
 
         fight.on().action()
                   .forEach(action -> {
@@ -67,9 +80,8 @@ public class FightEngine {
         fight.endTurn();
         fight.endRound();
 
-        XMLOutput.writeToFile(getMyParty(), "./target/myparty.xml");
+//        XMLOutput.writeToFile(getMyParty(), "./target/myparty.xml");
         
-        new EngineWindow(fight.getState().getActors()).show();
     }
 
     private static BattleField setup(){

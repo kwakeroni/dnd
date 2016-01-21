@@ -3,6 +3,7 @@ package active.model.fight;
 import active.model.cat.Actor;
 import active.model.cat.Hittable;
 import active.model.cat.Named;
+import active.model.creature.event.CreatureEventStream;
 import active.model.die.D20;
 import active.model.die.Roll;
 import active.model.value.Score;
@@ -32,4 +33,6 @@ public interface Participant extends Named {
      * @pre isActor()
      */
     public void setInitiative(Roll<D20> roll);
+
+    public CreatureEventStream on();
 }

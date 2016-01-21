@@ -28,4 +28,8 @@ public interface FightEventStream extends EventStream {
         return ofType(ActionExecuted.class);
     }
 
+    public default Channel<ParticipantsChanged> participantsChanged(){
+        return ofType(ParticipantsChanged.class);
+    }
+
 }

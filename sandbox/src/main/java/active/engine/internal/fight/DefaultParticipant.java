@@ -1,16 +1,23 @@
 package active.engine.internal.fight;
 
+import active.engine.event.EventBrokerSupport;
 import active.model.cat.Description;
+import active.model.cat.Observable;
+import active.model.creature.event.CreatureEventStream;
 import active.model.effect.Hit;
 import active.model.cat.Actor;
 import active.model.cat.Hittable;
 import active.model.die.D20;
+import active.model.event.Event;
 import active.model.fight.Participant;
 import active.model.die.Roll;
+import active.model.fight.event.FightAware;
+import active.model.fight.event.FightEventStream;
 import active.model.value.Modifier;
 import active.model.value.Score;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * @author Maarten Van Puymbroeck
@@ -20,24 +27,26 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
     private final String name;
     private final Actor actor;
     private final Hittable target;
+    private final Observable<CreatureEventStream> creature;
     private Score initiative;
 
     public static Participant ofUntouchable(String name, Actor actor){
-        return new DefaultParticipant(name, actor, null);
+        return new DefaultParticipant(name, actor, null, null);
     }
 
     public static Participant ofObject(String name, Hittable target){
-        return new DefaultParticipant(name, null, target);
+        return new DefaultParticipant(name, null, target, null);
     }
 
-    public static <P extends Object & Actor & Hittable> Participant ofCreature(P character){
-        return new DefaultParticipant(character.getName(), character, character);
+    public static <P extends Object & Actor & Hittable & Observable<CreatureEventStream>> Participant ofCreature(P character){
+        return new DefaultParticipant(character.getName(), character, character, character);
     }
 
-    private DefaultParticipant(String name, Actor actor, Hittable target) {
+    private DefaultParticipant(String name, Actor actor, Hittable target, Observable<CreatureEventStream> creature) {
         this.name = name;
         this.actor = actor;
         this.target = target;
+        this.creature = creature;
     }
 
     @Override
@@ -102,5 +111,8 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
         target.hit(hit);
     }
 
-
+    @Override
+    public CreatureEventStream on() {
+        return this.creature.on();
+    }
 }
