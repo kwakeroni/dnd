@@ -1,34 +1,35 @@
 package active.engine.gui.swing;
 
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
-import active.model.cat.Named;
-import active.model.event.Datum;
+import active.model.fight.event.FightData;
 
-class CharacterList<C extends Named> {
+class CharacterList {
 
     private static final Insets INSETS = new Insets(4,8,4,8);
 
-    private Datum<? extends Stream<? extends C>> data;
-    private final Function<C, ? extends CharacterLine<? super C>> lineFactory;
+    private FightData data;
     private final JPanel panel = new JPanel();
-    private Map<String, CharacterLine<? super C>> lines = new HashMap<>();
+    private Map<String, ParticipantLine> lines = new HashMap<>();
 
-    CharacterList(Datum<? extends Stream<? extends C>> characters, Function<C, ? extends CharacterLine<? super C>> lineFactory){
+    CharacterList(FightData fightData){
         GridBagLayout layout = new GridBagLayout();
         this.panel.setLayout(layout);
-        this.lineFactory = lineFactory;
 
-        this.data = characters;
-        this.data.onChanged(this::updateData);
+        this.data = fightData;
+        this.data.participants().onChanged(this::updateData);
+        this.data.turn().onChanged(this::updateTurn);
 
         updateData();
 
@@ -38,17 +39,26 @@ class CharacterList<C extends Named> {
         return this.panel;
     }
 
+    private synchronized void updateTurn(){
+        lines.values().forEach(CharacterLine::deselect);
+        data.turn().get().ifPresent(turn -> {
+            ParticipantLine line = lines.get(turn.getActor().getName());
+            line.select();
+        });
+        
+    }
+
     private synchronized void updateData(){
 
-        Map<String, CharacterLine<? super C>> newLines = new HashMap<>();
+        Map<String, ParticipantLine> newLines = new HashMap<>();
         this.panel.removeAll();
 
         AtomicInteger columns = new AtomicInteger(0);
-        data.get()
+        data.participants().get()
                   .forEach(named -> {
                       String name = named.getName();
 
-                      CharacterLine<? super C> line = getLine(name).orElseGet(() -> this.lineFactory.apply(named));
+                      ParticipantLine line = getLine(name).orElseGet(() -> new ParticipantLine(named));
                       newLines.put(name, line);
 
                       int l = newLines.size() - 1;
@@ -71,7 +81,7 @@ class CharacterList<C extends Named> {
         this.panel.revalidate();
     }
 
-    private Optional<CharacterLine<? super C>> getLine(String name){
+    private Optional<ParticipantLine> getLine(String name){
         return Optional.ofNullable(this.lines.get(name));
     }
 
@@ -80,7 +90,9 @@ class CharacterList<C extends Named> {
         c.gridx = component;
         c.gridy = line;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = INSETS;
+        c.ipadx = 24;
+        c.ipady = 12;
+        //c.insets = INSETS;
         return c;
     }
 
@@ -89,15 +101,9 @@ class CharacterList<C extends Named> {
         c.gridx = component;
         c.gridy = line;
         c.fill = GridBagConstraints.HORIZONTAL;
-        c.insets = INSETS;
+        //c.insets = INSETS;
         c.weightx = 1.0;
         c.weighty = 1.0;
         return c;
     }
-
-    private CharacterLine<? super C> createLine(C named){
-        return this.lineFactory.apply(named);
-    }
-
-
 }

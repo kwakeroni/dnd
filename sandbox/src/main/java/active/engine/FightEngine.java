@@ -1,34 +1,29 @@
 package active.engine;
 
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import javax.swing.JOptionPane;
+
 import active.engine.gui.swing.EngineWindow;
 import active.engine.internal.action.HitAction;
 import active.engine.internal.cat.DecoratedDescription;
-import active.engine.internal.cat.DefaultDescription;
-import active.engine.internal.effect.DefaultHit;
 import active.engine.internal.creature.DefaultCreature;
 import active.engine.internal.creature.DefaultParty;
 import active.engine.internal.fight.BattleField;
 import active.engine.internal.fight.DefaultParticipant;
 import active.engine.util.TableFormat;
-import active.io.xml.XMLOutput;
 import active.model.action.Action;
-import active.model.cat.Description;
 import active.model.cat.Hittable;
 import active.model.creature.Party;
 import active.model.die.Roll;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
 import active.model.fight.Participant;
-import active.model.fight.Round;
-import active.model.fight.Turn;
 import active.model.value.Modifier;
 import active.model.value.Score;
-
-import javax.swing.*;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
 /**
  * @author Maarten Van Puymbroeck
  */
@@ -46,7 +41,7 @@ public class FightEngine {
 
         FightController fight = battleField.startFight();
 
-        new EngineWindow(fight.getData().participants()).show();
+        new EngineWindow(fight.getData()).show();
 
 
         Participant p = DefaultParticipant.ofCreature(new DefaultCreature("Billy", Score.of(25), Modifier.of(4)));
@@ -57,7 +52,9 @@ public class FightEngine {
         fight.on().turnEnded()
 
                   .peek(turn -> dump(null, turn.getFight()))
-                  .peek(turn -> JOptionPane.showConfirmDialog(null, "Wait"));
+                  //.peek(turn -> JOptionPane.showConfirmDialog(null, "Wait"))
+                  .peek(t -> sleep(2000))
+                  ;
 
         fight.on().action()
                   .forEach(action -> {
@@ -82,6 +79,15 @@ public class FightEngine {
 
 //        XMLOutput.writeToFile(getMyParty(), "./target/myparty.xml");
         
+    }
+    
+    private static void sleep(long millis){
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private static BattleField setup(){

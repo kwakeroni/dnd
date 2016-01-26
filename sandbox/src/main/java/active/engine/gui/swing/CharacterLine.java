@@ -20,8 +20,13 @@ public abstract class CharacterLine<C extends Named> {
     protected LabelBuilder newLabel(String text){
         return LabelBuilder.of(text)
                            .middle()
-                           .font(FONT);
+                           .font(FONT)
+                           .background(new Color(196,128,255));
     }
 
     public abstract Collection<? extends JComponent> components();
+    
+    public abstract void select();
+    public abstract void deselect();
+    
 }

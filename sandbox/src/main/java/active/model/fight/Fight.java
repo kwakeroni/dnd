@@ -18,8 +18,8 @@ public interface Fight {
     public  <HP extends Participant & Hittable> Stream<HP> getTargets();
 
     public default Stream<Participant> getParticipants(){
-        return Stream.concat( this.getActors(),
-                              this.getTargets().filter(p -> ! p.isActor()) );
+        return Stream.<Participant> concat( this.getActors(),
+                                            this.getTargets().filter(p -> ! p.isActor()) );
     }
 
     public Optional<? extends Round> getCurrentRound();

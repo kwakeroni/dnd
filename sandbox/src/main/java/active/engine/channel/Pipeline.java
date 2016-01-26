@@ -27,7 +27,7 @@ abstract class Pipeline<E_IN, E_OUT> implements Consumer<E_IN>, Channel<E_OUT> {
 
     @Override
     public <R> Channel<R> map(Function<? super E_OUT, ? extends R> mapper) {
-        return forwardTo(new MapOp<>(mapper));
+        return forwardTo(new MapOp<E_OUT, R>(mapper));
     }
 
     @Override

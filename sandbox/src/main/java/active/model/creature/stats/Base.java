@@ -15,6 +15,7 @@ public final class Base {
 
     }
 
+    @SuppressWarnings("rawtypes")
     private static enum RawBase implements Statistic {
         NAME,
         HP,

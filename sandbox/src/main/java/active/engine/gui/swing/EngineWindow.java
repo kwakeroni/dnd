@@ -17,22 +17,19 @@ import active.engine.util.gui.swing.WindowAdapter;
 import active.model.cat.Named;
 import active.model.event.Datum;
 import active.model.fight.Participant;
+import active.model.fight.event.FightData;
 
 public class EngineWindow {
 
     private JFrame frame;
 
-    public EngineWindow(Datum<? extends Stream<? extends Participant>> characters){
-        this(characters, p -> new ParticipantLine(p));
-    }
-
-    public <C extends Named> EngineWindow(Datum<? extends Stream<? extends C>> characters, Function<C, ? extends CharacterLine<? super C>> lineFactory){
+    public EngineWindow(FightData fightData){
         this.frame = new JFrame();
         this.frame.setTitle("Dungeons and Dragons 3.5 Fight Assistant");
         this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.frame.addWindowListener(WindowAdapter.closing(event -> showCloseDialog()));
 
-        this.frame.getContentPane().add(new CharacterList<>(characters, lineFactory).component());
+        this.frame.getContentPane().add(new CharacterList(fightData).component());
     }
     
     public void show(){

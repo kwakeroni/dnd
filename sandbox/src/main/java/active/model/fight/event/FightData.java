@@ -4,7 +4,10 @@ import active.model.event.Datum;
 import active.model.event.Event;
 import active.model.fight.Fight;
 import active.model.fight.Participant;
+import active.model.fight.Round;
+import active.model.fight.Turn;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -30,6 +33,23 @@ public class FightData {
             public void onChanged(Consumer<Event> consumer) {
                 fight.on().participantsChanged().forEach(consumer);
             }
+        };
+    }
+    
+    public Datum<Optional<Turn>> turn() {
+        return new Datum<Optional<Turn>>() {
+
+            @Override
+            public Optional<Turn> get() {
+                return fight.getCurrentRound().flatMap(Round::getCurrentTurn);
+            }
+
+            @Override
+            public void onChanged(Consumer<Event> consumer) {
+                fight.on().turnStarted().forEach(consumer);
+                fight.on().turnEnded().forEach(consumer);
+            }
+            
         };
     }
 

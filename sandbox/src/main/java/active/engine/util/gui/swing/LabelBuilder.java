@@ -1,9 +1,10 @@
 package active.engine.util.gui.swing;
 
-import com.google.common.base.Optional;
 
 import javax.swing.*;
+
 import java.awt.*;
+import java.util.Optional;
 
 /**
  * @author Maarten Van Puymbroeck
@@ -47,11 +48,16 @@ public class LabelBuilder {
         this.label.get().setFont(font);
         return this;
     }
+    
+    public LabelBuilder background(Color color){
+        this.label.get().setBackground(color);
+        return this;
+    }
 
 
     public JLabel create(){
         JLabel result = label.get();
-        this.label = Optional.absent();
+        this.label = Optional.empty();
         return result;
     }
 
