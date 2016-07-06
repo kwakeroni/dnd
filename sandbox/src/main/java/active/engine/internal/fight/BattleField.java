@@ -1,17 +1,21 @@
 package active.engine.internal.fight;
 
+import active.engine.event.EventBroker;
 import active.engine.event.EventBrokerSupport;
 import active.model.creature.Party;
 import active.model.event.Event;
+import active.model.event.EventStream;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
 import active.model.fight.Participant;
 import active.model.fight.event.FightAware;
+import active.model.fight.event.FightEvent;
 import active.model.fight.event.FightEventStream;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -20,6 +24,11 @@ import java.util.stream.Stream;
 public class BattleField {
 
     Collection<Participant> participants = new HashSet<>();
+    EventBrokerSupport<?> broker;
+
+    public BattleField(EventBrokerSupport<?> broker) {
+        this.broker = broker;
+    }
 
     public void add(Party party){
         party.members()
@@ -37,10 +46,13 @@ public class BattleField {
 
         DefaultFight fight = new DefaultFight();
 
-        
+        Function<EventStream, FightEventStream> fightEventStream = (EventStream source) -> (FightEventStream) source::event;
+        EventBroker<FightEventStream> fes = this.broker.supplying((EventStream source) -> (FightEventStream) source::event);
+
         EventBrokerSupport<FightEventStream> broker =
-            EventBrokerSupport.newInstance()
-                .supplying((source) -> (FightEventStream) source::event)
+
+            this.broker
+                .supplying((EventStream source) -> (FightEventStream) source::event)
                 .preparing((Consumer<Event>) event -> {
                         if (event instanceof FightAware)
                             ((FightAware) event).setFight(fight);

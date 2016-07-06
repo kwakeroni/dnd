@@ -1,5 +1,11 @@
 package active.engine;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -7,6 +13,9 @@ import java.util.stream.Stream;
 
 import javax.swing.JOptionPane;
 
+import active.engine.command.CommandHandler;
+import active.engine.command.CommandHandlerSupport;
+import active.engine.event.EventBrokerSupport;
 import active.engine.gui.swing.EngineWindow;
 import active.engine.internal.action.HitAction;
 import active.engine.internal.cat.DecoratedDescription;
@@ -34,14 +43,17 @@ public class FightEngine {
         System.setProperty("sun.java2d.d3d", "false");
         
         DecoratedDescription.Builder log = log();
+        EventBrokerSupport<?> broker = EventBrokerSupport.newInstance();
 
-
-        BattleField battleField = setup();
+        BattleField battleField = setup(broker);
 
 
         FightController fight = battleField.startFight();
 
-        new EngineWindow(fight.getData()).show();
+        CommandHandlerSupport handler = new CommandHandlerSupport();
+        handler.registerContext(FightController.class, fight);
+        
+        new EngineWindow(handler, fight.getData(), broker).show();
 
 
         Participant p = DefaultParticipant.ofCreature(new DefaultCreature("Billy", Score.of(25), Modifier.of(4)));
@@ -49,12 +61,12 @@ public class FightEngine {
         fight.addParticipant(p);
 
 
-        fight.on().turnEnded()
-
-                  .peek(turn -> dump(null, turn.getFight()))
-                  //.peek(turn -> JOptionPane.showConfirmDialog(null, "Wait"))
-                  .peek(t -> sleep(2000))
-                  ;
+//        fight.on().turnEnded()
+//
+//                  .peek(turn -> dump(null, turn.getFight()))
+//                  //.peek(turn -> JOptionPane.showConfirmDialog(null, "Wait"))
+//                  .peek(t -> sleep(2000))
+//                  ;
 
         fight.on().action()
                   .forEach(action -> {
@@ -66,16 +78,16 @@ public class FightEngine {
         dump("Targets", fight.getState().getTargets());
         dump("Start", fight);
 
-        for (int i=0; i<4; i++){
-            fight.nextTurn();
-
-            Action<? super Fight> action = new HitAction(fight.getState().getCurrentActor().get(), target(fight));
-
-            fight.execute(action);
-        }
-
-        fight.endTurn();
-        fight.endRound();
+//        for (int i=0; i<4; i++){
+//            fight.nextTurn();
+//
+//            Action<? super Fight> action = new HitAction(fight.getState().getCurrentActor().get(), target(fight));
+//
+//            fight.execute(action);
+//        }
+//
+//        fight.endTurn();
+//        fight.endRound();
 
 //        XMLOutput.writeToFile(getMyParty(), "./target/myparty.xml");
         
@@ -90,8 +102,8 @@ public class FightEngine {
         }
     }
 
-    private static BattleField setup(){
-        BattleField setup = new BattleField();
+    private static BattleField setup(EventBrokerSupport<?> broker){
+        BattleField setup = new BattleField(broker);
 
         setup.add(getMyParty());
         setup.add(getOtherParty());

@@ -1,21 +1,26 @@
 package active.engine.gui.swing;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 
+import active.model.fight.Participant;
 import active.model.fight.event.FightData;
 
-class CharacterList {
+import static active.engine.gui.swing.MouseListenerSupport.onMouseClicked;
+
+class CharacterList implements ContainerAdapter{
 
     private static final Insets INSETS = new Insets(4,8,4,8);
 
@@ -105,5 +110,35 @@ class CharacterList {
         c.weightx = 1.0;
         c.weighty = 1.0;
         return c;
+    }
+
+
+    public void withParticipant(Consumer<Participant> action) {
+
+        AtomicReference<Optional<Snapshot>> snapshot= new AtomicReference<>(Optional.empty());
+
+        MouseListener listener = new MouseListenerSupport(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("Clicked " + e.getComponent());
+                lines.values().stream()
+                        .peek(line -> System.out.println(line.components()))
+                        .filter(line -> line.components().contains(e.getComponent()))
+                        .findAny()
+                        .map(ParticipantLine::getParticipant)
+                        .ifPresent(action);
+                snapshot.get().ifPresent(Snapshot::restore);
+            }
+        };
+
+        snapshot.set(Optional.of(modify(c -> c.addMouseListener(listener), c -> c.removeMouseListener(listener))));
+
+    }
+
+    @Override
+    public Stream<? extends Component> components() {
+        return this.lines.values()
+                .stream()
+                .flatMap(line -> line.components().stream());
     }
 }

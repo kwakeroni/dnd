@@ -22,7 +22,7 @@ public abstract class EventBrokerSupport<ES extends EventStream> implements Even
 
     }
 
-    public <NES extends EventStream> EventBrokerSupport<NES> supplying(Function<ES, NES> mapper){
+    public <NES extends EventStream> EventBrokerSupport<NES> supplying(Function<? super ES, NES> mapper){
         return new Adapter<NES, EventBrokerSupport<ES>>(this) {
             @Override
             public NES on() {

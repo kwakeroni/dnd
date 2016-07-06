@@ -62,6 +62,10 @@ class ParticipantLine extends CharacterLine<Participant> {
         return newLabel(participant.asTarget().map(h -> h.getHP()).map(Object::toString).orElse("")).center().create();
     }
 
+    public Participant getParticipant(){
+        return this.participant;
+    }
+
 
     public Collection<? extends JComponent> components(){
         return this.components.values();

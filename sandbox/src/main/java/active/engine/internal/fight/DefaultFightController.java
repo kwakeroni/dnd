@@ -52,6 +52,9 @@ public class DefaultFightController implements FightController {
 
     @Override
     public Turn startTurn() {
+        if (! fight.getCurrentRound().isPresent()){
+            fight.startRound();
+        }
         return fight.getCurrentRound().get().startTurn();
     }
 
