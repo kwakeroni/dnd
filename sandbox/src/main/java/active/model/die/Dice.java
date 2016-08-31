@@ -12,7 +12,10 @@ public class Dice {
 
     }
 
-    public static D20 D20 = active.model.die.D20.INSTANCE;
+    public static final D20 D20 = active.model.die.D20.INSTANCE;
+    public static Die D4 = new SingleDie(4);
+    public static Die D6 = new SingleDie(6);
+    public static Die D8 = new SingleDie(8);
 
     public static <D extends Die> _2<D> _2(D die){
         return _2.instance(die);

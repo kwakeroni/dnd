@@ -11,7 +11,8 @@ import java.util.concurrent.BlockingQueue;
 /**
  * (C) 2016 Maarten Van Puymbroeck
  */
-public class SwingCommandHandler implements CommandHandler {
+@Deprecated // unused
+class SwingCommandHandler implements CommandHandler {
 
     private final CommandHandler delegate;
     private final BlockingQueue<Command> queue;

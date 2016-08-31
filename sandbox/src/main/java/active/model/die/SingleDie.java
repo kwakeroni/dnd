@@ -22,6 +22,11 @@ public /* value */ class SingleDie extends Die {
     }
 
     @Override
+    public int getMaxRoll() {
+        return sides;
+    }
+
+    @Override
     public String toString() {
         return "D" + sides;
     }

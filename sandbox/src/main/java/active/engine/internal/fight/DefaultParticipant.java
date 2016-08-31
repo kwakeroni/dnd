@@ -1,6 +1,7 @@
 package active.engine.internal.fight;
 
 import active.engine.event.EventBrokerSupport;
+import active.model.action.ActionType;
 import active.model.cat.Description;
 import active.model.cat.Observable;
 import active.model.creature.event.CreatureEventStream;
@@ -16,6 +17,7 @@ import active.model.fight.event.FightEventStream;
 import active.model.value.Modifier;
 import active.model.value.Score;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -29,6 +31,7 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
     private final Hittable target;
     private final Observable<CreatureEventStream> creature;
     private Score initiative;
+    private Collection<ActionType> actionTypes;
 
     public static Participant ofUntouchable(String name, Actor actor){
         return new DefaultParticipant(name, actor, null, null);
@@ -39,7 +42,9 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
     }
 
     public static <P extends Object & Actor & Hittable & Observable<CreatureEventStream>> Participant ofCreature(P character){
-        return new DefaultParticipant(character.getName(), character, character, character);
+        DefaultParticipant participant = new DefaultParticipant(character.getName(), character, character, character);
+        participant.setActionTypes(character.getActions());
+        return participant;
     }
 
     private DefaultParticipant(String name, Actor actor, Hittable target, Observable<CreatureEventStream> creature) {
@@ -107,6 +112,11 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
     }
 
     @Override
+    public Score getAC() {
+        return target.getAC();
+    }
+
+    @Override
     public void hit(Hit hit) {
         target.hit(hit);
     }
@@ -114,5 +124,14 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
     @Override
     public CreatureEventStream on() {
         return this.creature.on();
+    }
+
+    public void setActionTypes(Collection<ActionType> types){
+        this.actionTypes = types;
+    }
+
+    @Override
+    public Collection<ActionType> getActions() {
+        return this.actionTypes;
     }
 }

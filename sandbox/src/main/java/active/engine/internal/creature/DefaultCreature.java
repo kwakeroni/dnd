@@ -1,35 +1,52 @@
 package active.engine.internal.creature;
 
+import static active.model.die.Dice.*;
 import active.engine.event.EventBrokerSupport;
+import active.engine.internal.action.type.AttackActionType;
+import active.engine.internal.effect.DefaultAttack;
+import active.model.action.ActionType;
 import active.model.creature.event.CreatureEventStream;
 import active.model.creature.event.StatChanged;
-import active.model.creature.stats.Base;
-import active.model.creature.stats.Mod;
-import active.model.creature.stats.Statistic;
+import active.model.creature.stats.*;
+import active.model.die.Die;
+import active.model.effect.Attack;
 import active.model.effect.Hit;
 import active.model.creature.Creature;
 import active.model.value.Modifier;
 import active.model.value.Score;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 public class DefaultCreature implements Creature {
     
     private String name;
     private final Map<Statistic<?>, Object> statistics = new HashMap<>();
     private EventBrokerSupport<CreatureEventStream> broker;
+    private Collection<ActionType> actionTypes;
 
     
-    public DefaultCreature(String name, Score maxHP, Modifier init){
+    public DefaultCreature(String name, Score maxHP, Score ac, Modifier init){
         this.name = name;
         statistics.put(Base.MAX_HP, maxHP);
         statistics.put(Base.HP, maxHP);
         statistics.put(Mod.INIT, init);
+        statistics.put(Prop.AC, ac);
 
         this.broker = EventBrokerSupport.newInstance().supplying((source) -> (CreatureEventStream) source::event);
 
+        this.actionTypes = Arrays.asList(
+                new AttackActionType("Full Attack", attack("Bite", 9, _2(D6)), attack("Claw", 4, D6), attack("Claw", 4, D6)),
+                new AttackActionType("Single Attack", attack("Bite", 9, _2(D6))),
+                new AttackActionType("Ranged Attack", attack("Bow", 5, D8))
+        );
+
+
+    }
+
+    private Attack<?> attack(String name, int modifier, Die die){
+        return new DefaultAttack<>(name, Modifier.of(modifier), die);
     }
 
     public <S> S get(Statistic<S> stat){
@@ -39,6 +56,8 @@ public class DefaultCreature implements Creature {
         }
         return s;
     }
+
+
 
     private <S> void set(Statistic<S> stat, S value){
         S oldValue = get(stat);
@@ -54,6 +73,11 @@ public class DefaultCreature implements Creature {
     @Override
     public Score getHP() {
         return get(Base.HP);
+    }
+
+    @Override
+    public Score getAC() {
+        return get(Prop.AC);
     }
 
     @Override
@@ -75,5 +99,32 @@ public class DefaultCreature implements Creature {
     @Override
     public CreatureEventStream on() {
         return this.broker.on();
+    }
+
+    @Override
+    public Collection<ActionType> getActions() {
+        return this.actionTypes;
+    }
+
+    @Override
+    public Stream<ActionType> actions() {
+        return getActions().stream();
+    }
+
+    //    public Map<Statistic<?>, Object> getStatistics(){
+//        return Collections.unmodifiableMap(this.statistics);
+//    }
+//
+
+    @Override
+    public Stream<StatisticEntry<?>> statistics() {
+        return this.statistics.entrySet().stream()
+                .map(DefaultCreature::toStat);
+    }
+
+    private static <S> StatisticEntry<S> toStat(Map.Entry<Statistic<?>, Object> entry){
+        Statistic<S> stat = (Statistic<S>) entry.getKey();
+        S value = (S) entry.getValue();
+        return new StatisticEntry<>(stat, value);
     }
 }

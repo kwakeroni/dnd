@@ -7,6 +7,6 @@ import active.model.cat.Describable;
  */
 public interface Action<Context> extends Describable {
 
-    void execute(Context context);
+    public void execute(Context context);
 
 }

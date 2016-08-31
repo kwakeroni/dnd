@@ -11,4 +11,10 @@ public abstract class Die {
 
     abstract int doRoll();
 
+    public abstract int getMaxRoll();
+
+    public boolean isValid(int roll){
+        return roll > 0 && roll <= getMaxRoll();
+    }
+
 }

@@ -1,7 +1,10 @@
 package active.engine;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -11,7 +14,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import active.engine.command.CommandHandler;
 import active.engine.command.CommandHandlerSupport;
@@ -24,6 +27,8 @@ import active.engine.internal.creature.DefaultParty;
 import active.engine.internal.fight.BattleField;
 import active.engine.internal.fight.DefaultParticipant;
 import active.engine.util.TableFormat;
+import active.io.xml.XMLInput;
+import active.io.xml.XMLOutput;
 import active.model.action.Action;
 import active.model.cat.Hittable;
 import active.model.creature.Party;
@@ -53,20 +58,13 @@ public class FightEngine {
         CommandHandlerSupport handler = new CommandHandlerSupport();
         handler.registerContext(FightController.class, fight);
         
-        new EngineWindow(handler, fight.getData(), broker).show();
+//        EngineWindow ui = new EngineWindow(handler, fight.getData(), broker);
+//        ui.show();
 
-
-        Participant p = DefaultParticipant.ofCreature(new DefaultCreature("Billy", Score.of(25), Modifier.of(4)));
+        Participant p = DefaultParticipant.ofCreature(new DefaultCreature("Billy", Score.of(25), Score.of(27), Modifier.of(4)));
         p.setInitiative(Roll.D20());
         fight.addParticipant(p);
 
-
-//        fight.on().turnEnded()
-//
-//                  .peek(turn -> dump(null, turn.getFight()))
-//                  //.peek(turn -> JOptionPane.showConfirmDialog(null, "Wait"))
-//                  .peek(t -> sleep(2000))
-//                  ;
 
         fight.on().action()
                   .forEach(action -> {
@@ -78,19 +76,11 @@ public class FightEngine {
         dump("Targets", fight.getState().getTargets());
         dump("Start", fight);
 
-//        for (int i=0; i<4; i++){
-//            fight.nextTurn();
-//
-//            Action<? super Fight> action = new HitAction(fight.getState().getCurrentActor().get(), target(fight));
-//
-//            fight.execute(action);
-//        }
-//
-//        fight.endTurn();
-//        fight.endRound();
+        File targetDir = new File(FightEngine.class.getResource("/classdir").toURI()).getAbsoluteFile().getParentFile().getParentFile();
+System.out.println("Outputting to " +  new File(targetDir, "myparty.xml").getAbsolutePath());
+        XMLOutput.writeToFile(getMyParty(), new File(targetDir, "myparty.xml").getAbsolutePath());
+        XMLOutput.writeToFile(getOtherParty(), new File(targetDir, "otherparty.xml").getAbsolutePath());
 
-//        XMLOutput.writeToFile(getMyParty(), "./target/myparty.xml");
-        
     }
     
     private static void sleep(long millis){
@@ -116,16 +106,23 @@ public class FightEngine {
     }
     
     private static Party getMyParty(){
-        DefaultParty party = new DefaultParty("ours");
-        party.add(new DefaultCreature("Fred", Score.of(18), Modifier.of(3)));
-        party.add(new DefaultCreature("George", Score.of(18), Modifier.of(3)));
-        return party;
+
+        try {
+            return XMLInput.readParty("C:\\Projects\\workspace-java8\\dnd\\myparty.xml");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+//        DefaultParty party = new DefaultParty("ours");
+//        party.add(new DefaultCreature("Fred", Score.of(18), Score.of(21), Modifier.of(3)));
+//        party.add(new DefaultCreature("George", Score.of(18), Score.of(21), Modifier.of(3)));
+//        return party;
     }
     
     private static Party getOtherParty(){
         DefaultParty party = new DefaultParty("the others");
-        party.add(new DefaultCreature("Lucius", Score.of(22), Modifier.of(2)));
-        party.add(new DefaultCreature("Bellatrix", Score.of(16), Modifier.of(4)));
+        party.add(new DefaultCreature("Lucius", Score.of(22), Score.of(19), Modifier.of(2)));
+        party.add(new DefaultCreature("Astoria", Score.of(16), Score.of(25), Modifier.of(4)));
         return party;
     }
     

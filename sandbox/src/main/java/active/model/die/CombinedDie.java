@@ -12,12 +12,17 @@ public abstract class CombinedDie extends Die {
 
     }
 
+    abstract Stream<Die> dice();
+
     @Override
     int doRoll() {
         return dice().mapToInt(Die::doRoll).sum();
     }
 
-    abstract Stream<Die> dice();
+    @Override
+    public int getMaxRoll() {
+        return dice().mapToInt(Die::getMaxRoll).sum();
+    }
 
     @Override
     public String toString() {

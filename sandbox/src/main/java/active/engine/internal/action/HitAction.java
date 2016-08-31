@@ -1,9 +1,11 @@
 package active.engine.internal.action;
 
+import active.engine.internal.effect.DefaultDamage;
 import active.engine.internal.effect.DefaultHit;
 import active.model.cat.Actor;
 import active.model.cat.Description;
 import active.model.cat.Hittable;
+import active.model.effect.Damage;
 import active.model.effect.Hit;
 import active.model.value.Score;
 
@@ -12,13 +14,16 @@ import active.model.value.Score;
  */
 public class HitAction extends SimpleAction<Object> {
 
-    public HitAction(Actor actor, Hittable target) {
+    private final Damage damage;
+
+    public HitAction(Actor actor, Hittable target, Damage dmg) {
         super(actor, target);
+        this.damage = dmg;
     }
 
     @Override
     public void doExecute(Object o) {
-        Hit hit = DefaultHit.of(5);
+        Hit hit = DefaultHit.of(damage);
         this.target.hit(hit);
     }
 

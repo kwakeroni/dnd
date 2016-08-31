@@ -7,7 +7,9 @@ import active.model.value.Score;
  * @author Maarten Van Puymbroeck
  */
 public interface Hittable extends Named {
-    
+
+    public Score getAC();
+
     public Score getHP();
     
     public void hit(Hit hit);
@@ -15,6 +17,11 @@ public interface Hittable extends Named {
     public default Hittable unmodifiableHittable(){
         Hittable self = this;
         return new Hittable() {
+            @Override
+            public Score getAC() {
+                return self.getAC();
+            }
+
             @Override
             public Score getHP() {
                 return self.getHP();

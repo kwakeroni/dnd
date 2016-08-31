@@ -1,5 +1,6 @@
 package active.engine.gui.swing;
 
+import active.engine.gui.swing.support.ContainerAdapter;
 import active.engine.util.gui.swing.LabelBuilder;
 import active.model.cat.Named;
 
@@ -10,7 +11,7 @@ import java.util.Collection;
 /**
  * @author Maarten Van Puymbroeck
  */
-public abstract class CharacterLine<C extends Named> {
+public abstract class CharacterLine<C extends Named> implements ContainerAdapter {
 
     private static Font FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
 
@@ -24,8 +25,6 @@ public abstract class CharacterLine<C extends Named> {
                            .background(new Color(196,128,255));
     }
 
-    public abstract Collection<? extends JComponent> components();
-    
     public abstract void select();
     public abstract void deselect();
     

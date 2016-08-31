@@ -1,18 +1,36 @@
 package active.io.xml;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.SingleValueConverter;
+import com.thoughtworks.xstream.io.xml.XppDriver;
+import com.thoughtworks.xstream.mapper.ImmutableTypesMapper;
+import com.thoughtworks.xstream.mapper.Mapper;
 
 public class XStreamBuilder {
-    
-    private Optional<XStream> xstream = Optional.of(new XStream());
+    private static final Supplier<XStream> XSTREAM_PROVIDER;
+
+    static {
+        XStream template = new XStream();
+        Mapper templateMapper = template.getMapper();
+        final Mapper mapper = new HierarchicalImmutableTypesMapper(templateMapper);
+        XSTREAM_PROVIDER = () -> new XStream(
+                template.getReflectionProvider(),
+                new XppDriver(),
+                template.getClassLoaderReference(),
+                mapper);
+    }
+
+    private Optional<XStream> xstream = Optional.of(XSTREAM_PROVIDER.get());
     
     public XStreamBuilder(){
-        
+
     }
     
     public XStream build(){
@@ -45,7 +63,7 @@ public class XStreamBuilder {
                 
                 @Override
                 public boolean canConvert(Class arg0) {
-                    return arg0 == type;
+                    return type.isAssignableFrom(arg0);
                 }
                 
                 @Override
@@ -97,6 +115,40 @@ public class XStreamBuilder {
         public XStream build(){
             return XStreamBuilder.this.build();
         }
+    }
+
+
+
+    private static final class HierarchicalImmutableTypesMapper extends ImmutableTypesMapper {
+        private final Set<Class<?>> immutableTypes = new HashSet<>();
+
+        public HierarchicalImmutableTypesMapper(Mapper wrapped) {
+            super(wrapped);
+        }
+
+        public void addImmutableType(Class type) {
+            immutableTypes.add(type);
+        }
+
+        public boolean isImmutableValueType(Class type) {
+            if (immutableTypes.contains(type)) {
+                return true;
+            } else if (isSubtypeOfImmutableTypes(type)){
+                return true;
+            } else {
+                return super.isImmutableValueType(type);
+            }
+        }
+
+        private boolean isSubtypeOfImmutableTypes(Class<?> type){
+            for (Class<?> immutableType : immutableTypes){
+                if (immutableType.isAssignableFrom(type)){
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
 
 }

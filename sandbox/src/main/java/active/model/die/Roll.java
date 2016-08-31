@@ -12,13 +12,19 @@ public final /* value */ class Roll<D extends Die> {
 
     private final int result;
 
-
     public static Roll<D20> D20(){
         return of(D20);
     }
 
     public static <D extends Die> Roll<D> of(D dice){
         return new Roll<>(dice.doRoll());
+    }
+
+    public static <D extends Die> Roll<D> of(D dice, int result){
+        if (! dice.isValid(result)){
+            throw new IllegalArgumentException(result + " is not a valid roll for " + dice);
+        }
+        return new Roll<>(result);
     }
 
     Roll(int result){
@@ -29,6 +35,8 @@ public final /* value */ class Roll<D extends Die> {
         return Score.of(this.result + modifier.toInt());
     }
 
+    public Score toScore() { return Score.of(this.result); }
+
      private static final void main(){
 
          Roll<D20> roll1 = Roll.of(D20);
@@ -38,4 +46,7 @@ public final /* value */ class Roll<D extends Die> {
 
      }
 
+    public int asInt(){
+        return this.result;
+    }
 }
