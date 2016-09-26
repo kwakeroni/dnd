@@ -5,6 +5,6 @@ package active.model.creature.stats;
  */
 public interface Statistic<S> {
 
-
+    S fromString(String value);
 
 }

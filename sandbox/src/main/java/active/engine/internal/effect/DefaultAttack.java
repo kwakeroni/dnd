@@ -11,9 +11,13 @@ import active.model.value.Modifier;
  */
 public class DefaultAttack<D extends Die> implements Attack<D> {
 
-    private final String name;
-    private final Modifier attackBonus;
-    private final D damageDie;
+    private String name;
+    private Modifier attackBonus;
+    private D damageDie;
+
+    public DefaultAttack(){
+
+    }
 
     public DefaultAttack(String name, Modifier attackBonus, D damageDie) {
         this.name = name;
@@ -39,5 +43,13 @@ public class DefaultAttack<D extends Die> implements Attack<D> {
     @Override
     public Damage getDamage(Roll<D> roll) {
         return new DefaultDamage(roll.toScore());
+    }
+
+    public void setAttackBonus(Modifier attackBonus) {
+        this.attackBonus = attackBonus;
+    }
+
+    public void setDamageDie(D damageDie) {
+        this.damageDie = damageDie;
     }
 }

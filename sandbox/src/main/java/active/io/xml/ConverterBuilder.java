@@ -1,119 +1,208 @@
 package active.io.xml;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import active.io.xml.ImperativeConverter.*;
-import active.model.creature.Party;
+import com.thoughtworks.xstream.converters.MarshallingContext;
+import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.io.HierarchicalStreamReader;
+import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
-public class ConverterBuilder<T> {
+public class ConverterBuilder<T, TImpl, CB extends ConverterBuilder<T, TImpl, CB>> {
 
-    protected final List<Item<T>> items;
+    protected final List<Item<T, TImpl>> items;
+    private final Class<T> type;
+    private final Supplier<TImpl> supplier;
 
-    public ConverterBuilder() {
+    public ConverterBuilder(Class<T> type, Class<TImpl> implType) {
+        this.type = type;
+        this.supplier = byDefaultConstructor(implType);
         this.items = new ArrayList<>();
     }
 
-    public static <T> ConverterBuilder<T> converter() {
-        return new ConverterBuilder<T>();
+    public static <T, CB extends ConverterBuilder<T, T, CB>> ConverterBuilder<T, T, CB> converter(Class<T> type) {
+        return new ConverterBuilder<>(type, type);
     }
 
-    public static <T> ConverterBuilder<T> converter(Class<T> type) {
-        return new ConverterBuilder<T>();
+    public static <T, TImpl, CB extends ConverterBuilder<T, TImpl, CB>> ConverterBuilder<T, TImpl, CB> converter(Class<T> type, Class<TImpl> implType) {
+        return new ConverterBuilder<>(type, implType);
     }
 
-
-    public ImperativeConverter<T> build(Class<T> type) {
-        return new ImperativeConverter<T>(type, new ImperativeConverter.ComposedItem<>(this.items));
+    private static <Q> Supplier<Q> byDefaultConstructor(Class<Q> targetType){
+        return () -> { try {
+                Constructor<Q> constructor = targetType.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                return constructor.newInstance();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }};
     }
 
-    public ConverterBuilder<T> withAttribute(String attributeName, Function<T, String> value) {
-        return withItem(new ImperativeConverter.ToAttribute<>(value, attributeName));
+    public ImperativeConverter<T, TImpl> build() {
+        return new ImperativeConverter<>(type, supplier, new ImperativeConverter.ComposedItem<>(this.items));
     }
 
-    public ConverterBuilder<T> withAttributes(String... attributeNames) {
+    public CB withAttribute(String attributeName, Function<T, String> value, BiConsumer<TImpl, String> reaffecter) {
+        return withItem(new ImperativeConverter.ToAttribute<>(attributeName, value, reaffecter));
+    }
+
+    public CB withAttribute(String attributeName, Function<String, ?> backConverter){
+        return withItem(new ImperativeConverter.ToAttribute<>(attributeName, backConverter));
+    }
+
+    public CB withAttributes(String... attributeNames) {
         for (String attributeName : attributeNames) {
             withItem(new ImperativeConverter.ToAttribute<>(attributeName));
         }
-        return this;
+        return (CB) this;
     }
 
-    public ConverterBuilder<T> withValue(Function<T, String> value) {
-        return withItem(new ImperativeConverter.ToValue<>(value));
+    public CB withValue(Function<T, String> value, BiConsumer<? super TImpl, String> reaffecter) {
+        return withItem(new ImperativeConverter.ToValue<>(value, reaffecter));
     }
 
-    public <S> ConverterBuilder<T> withElement(String name, Function<T, S> from) {
-        return withItem(ImperativeConverter.InElement.in(name, from));
+    public <S> CB withElement(String name, Class<S> targetType, Function<T, S> from, BiConsumer<TImpl, S> reaffecter) {
+        return withItem(ImperativeConverter.InElement.in(name, from, targetType, reaffecter));
     }
 
-    public <S> EmbeddedElement<S, T> withStream(String containerName, Function<T, Stream<S>> from) {
-        return withForEachInContainer(containerName, from.andThen(Stream::iterator));
+    public <S, SImpl> EmbeddedElement<S, SImpl, T, TImpl, CB> withStream(String containerName, Class<SImpl> elementType, Function<T, Stream<S>> from, BiConsumer<? super TImpl, ? super SImpl> addTo) {
+        return withForEachInContainer(
+                containerName,
+                elementType,
+                from.andThen(Stream::iterator),
+                (TImpl t, Iterator<SImpl> iter) -> iter.forEachRemaining(s -> addTo.accept(t, s)));
     }
 
 
-    public <S> EmbeddedElement<S, T> withStream(Function<T, Stream<S>> from) {
-        return withForEach(from.andThen(Stream::iterator));
+    public <S, SImpl> EmbeddedElement<S, SImpl, T, TImpl, CB> withStream(Class<SImpl> elementType, Function<T, Stream<S>> from, BiConsumer<? super TImpl, ? super SImpl> addTo) {
+        return withForEach(
+                elementType,
+                from.andThen(Stream::iterator),
+                (TImpl t, Iterator<SImpl> iter) -> iter.forEachRemaining(s -> addTo.accept(t, s)));
     }
 
-    public <S> EmbeddedElement<S, T> withElements(String containerName, Function<T, Iterable<S>> from) {
-        return withForEachInContainer(containerName, from.andThen(Iterable::iterator));
+    public <S, SImpl> EmbeddedElement<S, SImpl, T, TImpl, CB> withElements(String containerName, Class<SImpl> elementType, Function<T, Iterable<S>> from, BiConsumer<? super TImpl, ? super SImpl> addTo) {
+        return withForEachInContainer(
+                containerName,
+                elementType,
+                from.andThen(Iterable::iterator),
+                (TImpl t, Iterator<SImpl> iter) -> iter.forEachRemaining(s -> addTo.accept(t, s)));
     }
 
-    public <S> EmbeddedElement<S, T> withElements(Function<T, Iterable<S>> from) {
-        return withForEach(from.andThen(Iterable::iterator));
+    public <S, SImpl> EmbeddedElement<S, SImpl, T, TImpl, CB> withElements(Class<SImpl> elementType, Function<T, Iterable<S>> from, BiConsumer<? super TImpl, ? super SImpl> addTo) {
+        return withForEach(
+                elementType,
+                from.andThen(Iterable::iterator),
+                (TImpl t, Iterator<SImpl> iter) -> iter.forEachRemaining(s -> addTo.accept(t, s)));
     }
 
-    private <S> EmbeddedElement<S, T> withForEachInContainer(String containerName, Function<T, Iterator<S>> iterator) {
-        return new EmbeddedElement<>(this, elementConverter ->
+    private <S, SImpl> EmbeddedElement<S, SImpl, T, TImpl, CB> withForEachInContainer(String containerName, Class<SImpl> elementType, Function<T, Iterator<S>> iterator, BiConsumer<? super TImpl, ? super Iterator<SImpl>> reaffecter) {
+
+        // Function<T, Iterator<S>> iterator, BiConsumer<? super TImpl, ? super Iterator<SImpl>> reaffecter, Item<S, SImpl> delegate
+
+        Function<Item<S, SImpl>, Item<T, TImpl>> integrator = elementConverter ->
                 ImperativeConverter.InElement.in(containerName,
-                        new ImperativeConverter.ForEach<>(iterator, elementConverter)));
+                        new ImperativeConverter.ForEach<>(iterator, reaffecter, elementConverter));
+
+        return new EmbeddedElement<S, SImpl, T, TImpl, CB>((CB) this, elementType, integrator);
     }
 
-    private <S> EmbeddedElement<S, T> withForEach(Function<T, Iterator<S>> iterator) {
-        return new EmbeddedElement<>(this,
-                elementConverter -> new ImperativeConverter.ForEach<>(iterator, elementConverter));
+    private <S, SImpl> EmbeddedElement<S, SImpl, T, TImpl, CB> withForEach(Class<SImpl> elementType, Function<T, Iterator<S>> iterator, BiConsumer<? super TImpl, ? super Iterator<SImpl>> reaffecter) {
+        Function<Item<S,SImpl>, Item<T, TImpl>> integrator = elementConverter -> new ImperativeConverter.ForEach<>(iterator, reaffecter, elementConverter);
+
+        return new EmbeddedElement<>((CB) this, elementType, integrator);
     }
 
-    private ConverterBuilder<T> withItem(Item<T> item) {
+    public SubtypingBuilder<CB, T, TImpl, String> withSubtypeAttribute(String attribute){
+        ImperativeConverter.DirectAttributeItem<T> toAttribute = new ImperativeConverter.DirectAttributeItem<>(attribute);
+        ImperativeConverter.TypeSelectingItem.Discriminator<T, TImpl, String> discriminator =
+                new ImperativeConverter.TypeSelectingItem.Discriminator<>(
+                        toAttribute.getMappingFunction(),
+                        toAttribute
+                );
+        return new SubtypingBuilder<>((CB) this, discriminator);
+    }
+
+     CB withItem(Item<T, TImpl> item) {
         this.items.add(item);
-        return this;
+        return (CB) this;
     }
 
-    public static class EmbeddedConverterBuilder<T, P> extends ConverterBuilder<T> {
+    public static class EmbeddedConverterBuilder<T, TImpl, Parent, CB extends EmbeddedConverterBuilder<T, TImpl, Parent, CB>> extends ConverterBuilder<T, TImpl, CB> {
 
-        private final ConverterBuilder<P> parent;
-        private final Function<Item<T>, Item<P>> integrator;
+        private final Parent parent;
+        private final BiConsumer<Parent, Item<T, TImpl>> integrator;
+        private final Class<TImpl> targetType;
 
-        public EmbeddedConverterBuilder(ConverterBuilder<P> parent, Function<Item<T>, Item<P>> integrator) {
+        public EmbeddedConverterBuilder(Parent parent, BiConsumer<Parent, Item<T, TImpl>> integrator, Class<TImpl> targetType) {
+            super(null, targetType);
             this.parent = parent;
             this.integrator = integrator;
+            this.targetType = targetType;
         }
 
-        public ConverterBuilder<P> done() {
-            Item<T> delegate = (this.items.isEmpty()) ? ImperativeConverter.recurse() : new ComposedItem<>(this.items);
-            return this.parent.withItem(integrator.apply(delegate));
+        public Parent done() {
+            Item<T, TImpl> delegate = (this.items.isEmpty()) ? ImperativeConverter.recurse(this.targetType) : new ComposedItem<>(this.items);
+            this.integrator.accept(this.parent, delegate);
+            return this.parent;
+        }
+
+        @Override
+        public ImperativeConverter<T, TImpl> build() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public static class EmbeddedElement<T, TImpl, P, PImpl, PCB extends ConverterBuilder<P, PImpl, PCB>> {
+
+        private final PCB parent;
+        private final Function<Item<T, TImpl>, Item<P, PImpl>> integrator;
+        private final Class<TImpl> targetType;
+
+        public EmbeddedElement(PCB parent, Class<TImpl> targetType, Function<Item<T, TImpl>, Item<P, PImpl>> integrator) {
+            this.parent = parent;
+            this.integrator = integrator;
+            this.targetType = targetType;
+        }
+
+        EmbeddedConverterBuilder<T, TImpl, PCB, ?> as(String element) {
+            Function<Item<T, TImpl>, Item<P, PImpl>> embeddedIntegrator = item -> integrator.apply(InElement.in(element, item));
+
+            BiConsumer<PCB, Item<T, TImpl>> parentIntegrator =
+                    (p, delegate) -> p.withItem(embeddedIntegrator.apply(delegate));
+
+            return new EmbeddedConverterBuilder<>(parent, parentIntegrator, targetType);
         }
 
     }
 
-    public static class EmbeddedElement<T, P> {
+    public static class SubtypingBuilder<Parent extends ConverterBuilder<P,PImpl,Parent>, P, PImpl, D> {
 
-        private final ConverterBuilder<P> parent;
-        private final Function<Item<T>, Item<P>> integrator;
+        private final Parent parent;
+        private final ImperativeConverter.TypeSelectingItem.Discriminator<P, PImpl, D> discriminator;
+        private final Map<D, Item<? extends P,? extends PImpl>> types = new HashMap<>();
 
-        public EmbeddedElement(ConverterBuilder<P> parent, Function<Item<T>, Item<P>> integrator) {
+        public SubtypingBuilder(Parent parent, ImperativeConverter.TypeSelectingItem.Discriminator<P, PImpl, D> discriminator) {
             this.parent = parent;
-            this.integrator = integrator;
+            this.discriminator = discriminator;
         }
 
-        EmbeddedConverterBuilder<T, P> as(String element) {
-            Function<Item<T>, Item<P>> embeddedIntegrator = item -> integrator.apply(InElement.in(element, item));
-            return new EmbeddedConverterBuilder<>(parent, embeddedIntegrator);
+        private <T extends P, TImpl extends T> void addSubType(D discriminator, Item<T,TImpl> item, Class<TImpl> targetType){
+            this.types.put(discriminator, (Item<? extends P, ? extends PImpl>) new SupplyingItem<>( item, byDefaultConstructor(targetType)));
         }
 
+        public <T extends P> EmbeddedConverterBuilder<T,T,SubtypingBuilder<Parent,P,PImpl,D>,?> withSubType(D discriminator, Class<T> targetType){
+            return new EmbeddedConverterBuilder<>(this, (p, b) -> p.addSubType(discriminator, b, targetType), targetType);
+        }
+
+        public Parent done(){
+            return parent.withItem(new TypeSelectingItem<>(this.discriminator, this.types));
+        }
     }
 
 }

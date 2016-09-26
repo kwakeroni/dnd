@@ -1,5 +1,6 @@
 package active.io.xml;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,9 +19,12 @@ public class XMLOutput {
         XMLFormat.export(party).accept(this.destination);
         this.destination.flush();
     }
-    
+
     public static void writeToFile(Party party, String fileName) throws IOException {
-        try (FileOutputStream fos = new FileOutputStream(fileName)){
+        writeToFile(party, new File(fileName));
+    }
+    public static void writeToFile(Party party, File file) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(file)){
             new XMLOutput(fos).write(party);
         }
     }

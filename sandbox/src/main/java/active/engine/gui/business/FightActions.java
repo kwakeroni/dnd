@@ -6,6 +6,7 @@ import active.model.fight.FightController;
 import active.model.fight.command.*;
 import active.model.fight.event.FightData;
 
+import java.io.File;
 import java.util.function.Predicate;
 
 /**
@@ -40,5 +41,6 @@ public interface FightActions<ActionGUI> {
     static boolean noTurnActive(FightData f){
         return ! isTurnActive(f);
     }
+
 
 }

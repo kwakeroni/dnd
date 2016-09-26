@@ -5,8 +5,12 @@ package active.model.creature.stats;
  */
 public class StatisticEntry<S> {
 
-    private final Statistic<S> stat;
-    private final S value;
+    private Statistic<S> stat;
+    private S value;
+
+    public StatisticEntry(){
+
+    }
 
     public StatisticEntry(Statistic<S> stat, S value) {
         this.stat = stat;
@@ -19,5 +23,17 @@ public class StatisticEntry<S> {
 
     public S getValue() {
         return value;
+    }
+
+    public void setStat(Statistic<S> stat) {
+        this.stat = stat;
+    }
+
+    public void setValue(S value) {
+        this.value = value;
+    }
+
+    public void setStringValue(String value){
+        setValue(this.stat.fromString(value));
     }
 }

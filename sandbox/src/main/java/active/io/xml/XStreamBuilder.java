@@ -39,25 +39,27 @@ public class XStreamBuilder {
         return result;
     }
 
-    public <T> XStreamClassBuilder<T> with(Class<T> type){
-        return new XStreamClassBuilder<T>(type, this.xstream.get());
+    public <T> XStreamClassBuilder<T, T> with(Class<T> type){
+        return new XStreamClassBuilder<>(type, type, this.xstream.get());
     }
     
-    public class XStreamClassBuilder<T> {
+    public class XStreamClassBuilder<T, TImpl extends T> {
         private final Class<T> type;
+        private Class<TImpl> implType;
         private final XStream xstream;
         
-        private XStreamClassBuilder(Class<T> type, XStream xstream){
+        private XStreamClassBuilder(Class<T> type, Class<TImpl> implType, XStream xstream){
             this.type = type;
+            this.implType = implType;
             this.xstream = xstream;
         }
         
-        public XStreamClassBuilder<T> as(String alias){
+        public XStreamClassBuilder<T, TImpl> as(String alias){
             xstream.alias(alias, type);
             return this;
         }
         
-        public XStreamClassBuilder<T> asValue(Function<? super T, String> extractor, Function<String, ? extends T> creator){
+        public XStreamClassBuilder<T, TImpl> asValue(Function<? super T, String> extractor, Function<String, ? extends T> creator){
             xstream.addImmutableType(type);
             xstream.registerConverter(new SingleValueConverter() {
                 
@@ -79,36 +81,38 @@ public class XStreamBuilder {
             return this;
         }
         
-        public <S extends T> XStreamClassBuilder<T> implementedBy(Class<S> defaultImpl){
+        public <S extends T> XStreamClassBuilder<T, S> implementedBy(Class<S> defaultImpl){
             xstream.addDefaultImplementation(defaultImpl, type);
-            return this;
+            XStreamClassBuilder<T, S> self = (XStreamClassBuilder<T, S>) this;
+            self.implType = defaultImpl;
+            return self;
         }
         
-        public XStreamClassBuilder<T> withAttributes(String... attributes){
+        public XStreamClassBuilder<T, TImpl> withAttributes(String... attributes){
             for( String att : attributes){
                 xstream.useAttributeFor(type, att);
             }
             return this;
         }
         
-        public XStreamClassBuilder<T> withImplicit(String... collections){
+        public XStreamClassBuilder<T, TImpl> withImplicit(String... collections){
             for (String coll : collections){
                 xstream.addImplicitCollection(type, coll);
             }
             return this;
         }
         
-        public XStreamClassBuilder<T> using(ConverterBuilder<T> builder){
-            return using(builder.build(this.type));
+        public XStreamClassBuilder<T, TImpl> using(ConverterBuilder<T, TImpl, ?> builder){
+            return using(builder.build());
         }
         
-        public XStreamClassBuilder<T> using(Converter converter){
+        public XStreamClassBuilder<T, TImpl> using(Converter converter){
             xstream.registerConverter(converter);
             return this;
         }
         
         
-        public <U> XStreamClassBuilder<U> and(Class<U> type){
+        public <U> XStreamClassBuilder<U, U> and(Class<U> type){
             return XStreamBuilder.this.with(type);
         }
         

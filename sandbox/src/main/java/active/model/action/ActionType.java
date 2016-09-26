@@ -10,10 +10,10 @@ import java.util.function.Predicate;
  */
 public interface ActionType extends Named {
 
-    public Set<ActionCategory> getCategories();
+    public ActionCategory getCategory();
 
 
     public static Predicate<ActionType> hasCategory(ActionCategory category){
-        return type -> type.getCategories().contains(category);
+        return type -> category.equals(type.getCategory());
     }
 }

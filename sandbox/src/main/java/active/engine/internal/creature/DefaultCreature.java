@@ -26,7 +26,12 @@ public class DefaultCreature implements Creature {
     private EventBrokerSupport<CreatureEventStream> broker;
     private Collection<ActionType> actionTypes;
 
-    
+    public DefaultCreature(){
+        this.name="unknown";
+        this.broker = EventBrokerSupport.newInstance().supplying((source) -> (CreatureEventStream) source::event);
+        this.actionTypes = new ArrayList<>();
+    }
+
     public DefaultCreature(String name, Score maxHP, Score ac, Modifier init){
         this.name = name;
         statistics.put(Base.MAX_HP, maxHP);
@@ -57,9 +62,11 @@ public class DefaultCreature implements Creature {
         return s;
     }
 
+    public <S> void addStatistic(StatisticEntry<S> entry){
+        statistics.put(entry.getStat(), entry.getValue());
+    }
 
-
-    private <S> void set(Statistic<S> stat, S value){
+    public <S> void set(Statistic<S> stat, S value){
         S oldValue = get(stat);
         statistics.put(stat, value);
 
@@ -111,6 +118,10 @@ public class DefaultCreature implements Creature {
         return getActions().stream();
     }
 
+    public void addAction(ActionType action){
+        this.actionTypes.add(action);
+    }
+
     //    public Map<Statistic<?>, Object> getStatistics(){
 //        return Collections.unmodifiableMap(this.statistics);
 //    }
@@ -126,5 +137,9 @@ public class DefaultCreature implements Creature {
         Statistic<S> stat = (Statistic<S>) entry.getKey();
         S value = (S) entry.getValue();
         return new StatisticEntry<>(stat, value);
+    }
+
+    public String toString(){
+        return "Creature["+this.name+"]{"+this.statistics+"}{"+this.actionTypes+"}";
     }
 }

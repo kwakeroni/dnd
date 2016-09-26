@@ -1,6 +1,8 @@
 package active.engine.gui.swing;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.lang.reflect.Field;
@@ -48,6 +50,8 @@ public class EngineWindow implements InteractionHandler, ContainerAdapter {
 //        rightPane.add(new LogPane(events).component(), BorderLayout.EAST);
 
         context.registerContext(InteractionHandler.class, this);
+
+        this.frame.setJMenuBar(new FightMenu(appCommandHandler).component());
     }
     
     public void show(){

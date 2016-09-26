@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -45,6 +46,11 @@ public class FightEngine {
 
     public static void main(String[] args)  throws Exception{
 
+//        Collection<Party> parties = XMLInput.readParties("C:\\Projects\\workspace-java8\\dnd\\sandbox\\src\\test\\resources\\simple.xml");
+//        System.out.println(parties);
+//
+//        System.exit(0);
+
         System.setProperty("sun.java2d.d3d", "false");
         
         DecoratedDescription.Builder log = log();
@@ -58,8 +64,8 @@ public class FightEngine {
         CommandHandlerSupport handler = new CommandHandlerSupport();
         handler.registerContext(FightController.class, fight);
         
-//        EngineWindow ui = new EngineWindow(handler, fight.getData(), broker);
-//        ui.show();
+        EngineWindow ui = new EngineWindow(handler, fight.getData(), broker);
+        ui.show();
 
         Participant p = DefaultParticipant.ofCreature(new DefaultCreature("Billy", Score.of(25), Score.of(27), Modifier.of(4)));
         p.setInitiative(Roll.D20());
@@ -76,10 +82,10 @@ public class FightEngine {
         dump("Targets", fight.getState().getTargets());
         dump("Start", fight);
 
-        File targetDir = new File(FightEngine.class.getResource("/classdir").toURI()).getAbsoluteFile().getParentFile().getParentFile();
-System.out.println("Outputting to " +  new File(targetDir, "myparty.xml").getAbsolutePath());
-        XMLOutput.writeToFile(getMyParty(), new File(targetDir, "myparty.xml").getAbsolutePath());
-        XMLOutput.writeToFile(getOtherParty(), new File(targetDir, "otherparty.xml").getAbsolutePath());
+//        File targetDir = new File(FightEngine.class.getResource("/classdir").toURI()).getAbsoluteFile().getParentFile().getParentFile();
+//System.out.println("Outputting to " +  new File(targetDir, "myparty.xml").getAbsolutePath());
+//        XMLOutput.writeToFile(getMyParty(), new File(targetDir, "myparty.xml").getAbsolutePath());
+//        XMLOutput.writeToFile(getOtherParty(), new File(targetDir, "otherparty.xml").getAbsolutePath());
 
     }
     
@@ -96,7 +102,7 @@ System.out.println("Outputting to " +  new File(targetDir, "myparty.xml").getAbs
         BattleField setup = new BattleField(broker);
 
         setup.add(getMyParty());
-        setup.add(getOtherParty());
+//        setup.add(getOtherParty());
 
         setup.participants()
              .filter(Participant::isActor)
@@ -107,25 +113,25 @@ System.out.println("Outputting to " +  new File(targetDir, "myparty.xml").getAbs
     
     private static Party getMyParty(){
 
-        try {
-            return XMLInput.readParty("C:\\Projects\\workspace-java8\\dnd\\myparty.xml");
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+//        try {
+//            return XMLInput.readParties("C:\\Projects\\workspace-java8\\dnd\\myparty.xml").iterator().next();
+//        } catch (IOException e) {
+//            throw new UncheckedIOException(e);
+//        }
 
-//        DefaultParty party = new DefaultParty("ours");
-//        party.add(new DefaultCreature("Fred", Score.of(18), Score.of(21), Modifier.of(3)));
-//        party.add(new DefaultCreature("George", Score.of(18), Score.of(21), Modifier.of(3)));
-//        return party;
-    }
-    
-    private static Party getOtherParty(){
-        DefaultParty party = new DefaultParty("the others");
-        party.add(new DefaultCreature("Lucius", Score.of(22), Score.of(19), Modifier.of(2)));
-        party.add(new DefaultCreature("Astoria", Score.of(16), Score.of(25), Modifier.of(4)));
+        DefaultParty party = new DefaultParty("ours");
+        party.add(new DefaultCreature("Fred", Score.of(18), Score.of(21), Modifier.of(3)));
+        party.add(new DefaultCreature("George", Score.of(18), Score.of(21), Modifier.of(3)));
         return party;
     }
     
+//    private static Party getOtherParty(){
+//        DefaultParty party = new DefaultParty("the others");
+//        party.add(new DefaultCreature("Lucius", Score.of(22), Score.of(19), Modifier.of(2)));
+//        party.add(new DefaultCreature("Astoria", Score.of(16), Score.of(25), Modifier.of(4)));
+//        return party;
+//    }
+//
 
     private static DecoratedDescription.Builder log(){
         return DecoratedDescription.builder()

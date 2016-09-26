@@ -1,6 +1,7 @@
 package active.model.fight;
 
 import active.model.action.Action;
+import active.model.creature.Party;
 import active.model.fight.event.FightData;
 import active.model.fight.event.FightEventStream;
 
@@ -10,6 +11,8 @@ import active.model.fight.event.FightEventStream;
 public interface FightController {
 
     public Fight getState();
+
+    public void addParty(Party party);
 
     public void addParticipant(Participant p);
 

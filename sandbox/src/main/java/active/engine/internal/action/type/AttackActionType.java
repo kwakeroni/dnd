@@ -3,6 +3,7 @@ package active.engine.internal.action.type;
 import active.engine.internal.action.category.FightAction;
 import active.model.effect.Attack;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +15,11 @@ public class AttackActionType extends ActionTypeSupport {
 
     private List<Attack<?>> attacks;
 
+    public AttackActionType(){
+        super(FightAction.ATTACK);
+        this.attacks = new ArrayList<>();
+    }
+
     public AttackActionType(String name, Attack<?>... attacks) {
         this(name, Arrays.asList(attacks));
     }
@@ -24,5 +30,9 @@ public class AttackActionType extends ActionTypeSupport {
 
     public List<Attack<?>> getAttacks() {
         return attacks;
+    }
+
+    public void addAttack(Attack<?> attack){
+        this.attacks.add(attack);
     }
 }

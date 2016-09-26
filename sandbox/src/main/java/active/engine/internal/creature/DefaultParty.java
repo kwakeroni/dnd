@@ -12,12 +12,17 @@ import static java.util.Comparator.*;
 
 public class DefaultParty implements Party {
     
-    private final String name;
+    private String name;
     private final Set<Creature> members;
-    
+
+    public DefaultParty(){
+        this("unknown");
+    }
+
     public DefaultParty(String name){
-        this.name = name;
         this.members = new TreeSet<>(comparing(Creature::getName));
+        this.name = name;
+
     }
     
     public void add(Creature creature){
@@ -34,5 +39,8 @@ public class DefaultParty implements Party {
         return this.name;
     }
 
-    
+
+    public String toString(){
+        return "Party["+name+"]{" + this.members + "}";
+    }
 }

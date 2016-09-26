@@ -6,6 +6,9 @@ import active.engine.channel.ChannelAdapter;
 import active.engine.event.EventBroker;
 import active.engine.event.EventBrokerSupport;
 import active.model.action.Action;
+import active.model.creature.Creature;
+import active.model.creature.Party;
+import active.model.die.Roll;
 import active.model.event.Event;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
@@ -29,6 +32,15 @@ public class DefaultFightController implements FightController {
         this.fight = fight;
         this.broker = broker;
     }
+
+    @Override
+    public void addParty(Party party) {
+        party.members()
+            .map(DefaultParticipant::ofCreature)
+            .forEach(this::addParticipant);
+    }
+
+    private void
 
     @Override
     public void addParticipant(Participant p) {

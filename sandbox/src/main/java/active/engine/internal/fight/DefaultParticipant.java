@@ -17,6 +17,7 @@ import active.model.fight.event.FightEventStream;
 import active.model.value.Modifier;
 import active.model.value.Score;
 
+import java.awt.Desktop;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -44,6 +45,9 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
     public static <P extends Object & Actor & Hittable & Observable<CreatureEventStream>> Participant ofCreature(P character){
         DefaultParticipant participant = new DefaultParticipant(character.getName(), character, character, character);
         participant.setActionTypes(character.getActions());
+        Roll<D20> roll = Roll.D20();
+        participant.setInitiative(roll);
+        System.out.println("Rolling initiative for " + participant.getName() + ": " + roll + " " + character.getInitiativeModifier() + " = " + participant.getInitiative());
         return participant;
     }
 

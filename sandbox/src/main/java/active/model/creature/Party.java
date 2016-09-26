@@ -10,5 +10,6 @@ import active.model.cat.Named;
 public interface Party extends Named {
     
     public Stream<Creature> members();
+
     
 }
