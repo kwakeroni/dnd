@@ -2,7 +2,9 @@ package active.engine.gui.swing.action;
 
 import active.engine.command.CommandHandler;
 import active.engine.gui.business.IOActions;
+import active.engine.gui.config.Directories;
 import active.engine.gui.swing.ImportFileBuilder;
+import active.engine.gui.swing.SwingConfigProvider;
 import active.io.xml.XMLInput;
 import active.model.fight.FightController;
 import active.model.fight.event.FightData;
@@ -30,7 +32,11 @@ public class SwingFightActions {
                         .forWindow(parent.get())
                         .withTitle("Select Party File")
                         .withButton("Import")
-                        .andThen(file -> IOActions.importParties(file, handler.get()) );
+                        .withStartDirectory(SwingConfigProvider.getConfig().get(Directories.IMPORT_PARTY_DIRECTORY))
+                        .andThen(file -> {
+                            SwingConfigProvider.getConfig().set(Directories.IMPORT_PARTY_DIRECTORY, file.getParentFile().toPath());
+                            IOActions.importParties(file, handler.get());
+                        } );
             }
         };
     }

@@ -4,6 +4,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import java.awt.Component;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 
 /**
@@ -44,6 +45,21 @@ public class ImportFileBuilder {
 
     public ImportFileBuilder withButton(String button){
         this.fileChooser.setApproveButtonText(button);
+        return this;
+    }
+
+    public ImportFileBuilder withStartDirectory(Path dir){
+        if (dir != null){
+            return withStartDirectory(dir.toFile());
+        } else {
+            return this;
+        }
+    }
+
+    public ImportFileBuilder withStartDirectory(File dir){
+        if (dir != null) {
+            this.fileChooser.setCurrentDirectory(dir);
+        }
         return this;
     }
 

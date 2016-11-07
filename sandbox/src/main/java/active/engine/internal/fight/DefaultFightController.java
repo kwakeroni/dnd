@@ -40,7 +40,7 @@ public class DefaultFightController implements FightController {
             .forEach(this::addParticipant);
     }
 
-    private void
+
 
     @Override
     public void addParticipant(Participant p) {
