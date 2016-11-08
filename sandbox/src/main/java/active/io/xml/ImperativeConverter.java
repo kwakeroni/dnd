@@ -50,9 +50,7 @@ public class ImperativeConverter<T, TImpl> implements Converter {
 
         this.item.unmarshal(result, reader, context);
 
-        if (result.get() == null) {
-            throw new IllegalStateException("No result for " + reader.getNodeName());
-        } else return result.get();
+        return result.get().orElseThrow(() -> new IllegalStateException("No result for " + reader.getNodeName()));
     }
 
     public interface Item<T, TImpl> {
@@ -110,13 +108,13 @@ public class ImperativeConverter<T, TImpl> implements Converter {
         public void unmarshal(UnmarshalTarget<TImpl> result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             UnmarshalTarget<D> discriminatorValue = new UnmarshalTarget<D>();
             discriminator.getMarshaller().unmarshal(discriminatorValue, reader, context);
-            unmarshalSubType(this.map.get(discriminatorValue.get()), result, reader, context);
+            unmarshalSubType(this.map.get(discriminatorValue.get().orElseThrow(IllegalStateException::new)), result, reader, context);
         }
 
         private <SImpl extends TImpl> void unmarshalSubType(Item<?, SImpl> item, UnmarshalTarget<TImpl> result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             UnmarshalTarget<SImpl> target = new UnmarshalTarget<>();
             item.unmarshal(target, reader, context);
-            result.set(target.get());
+            result.set(target.get().orElse(null));
         }
 
 
@@ -175,7 +173,8 @@ public class ImperativeConverter<T, TImpl> implements Converter {
         @Override
         public void unmarshal(UnmarshalTarget<TImpl> result, HierarchicalStreamReader reader, UnmarshallingContext context) {
             SImpl subResult = doUnmarshal(reader, context);
-            this.reaffecter.accept(result.get(), subResult);
+            result.get().ifPresent(timpl ->
+                    this.reaffecter.accept(timpl, subResult));
         }
 
         protected SImpl doUnmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
@@ -209,12 +208,18 @@ public class ImperativeConverter<T, TImpl> implements Converter {
             int i=0;
             System.out.println("Iterating over " + reader.getNodeName());
             while(reader.hasMoreChildren()){
-                reader.moveDown();
+//                reader.moveDown();
                 System.out.println("Element " + i + "<"+ reader.getNodeName() + "> with " + delegate);
                 UnmarshalTarget<SImpl> result = new UnmarshalTarget<>();
                 delegate.unmarshal(result, reader, context);
-                collection.add(result.get());
-                reader.moveUp();
+                Optional<SImpl> simpl = result.get();
+                if (simpl.isPresent()){
+                    collection.add(result.get().get());
+                } else {
+                    break;
+                }
+
+//                reader.moveUp();
             }
             return collection.iterator();
         }
@@ -308,14 +313,15 @@ public class ImperativeConverter<T, TImpl> implements Converter {
         @Override
         public void marshal(S s, HierarchicalStreamWriter writer,
                             MarshallingContext context) {
-            writer.startNode(elementName);
             T t = transformer.apply(s);
-            if (t == null){
-                throw new NullPointerException("in element " + elementName);
+            if (t != null) { // everything is optional ?
+                writer.startNode(elementName);
+                if (t == null) {
+                    throw new NullPointerException("in element " + elementName);
+                }
+                delegate.marshal(t, writer, context);
+                writer.endNode();
             }
-            delegate.marshal(t, writer, context);
-            writer.endNode();
-
         }
 
         @Override
@@ -324,9 +330,12 @@ public class ImperativeConverter<T, TImpl> implements Converter {
             if (reader.getNodeName().equals(this.elementName)){
                 enter = false;
                 System.out.println("Treating wrapper " + this.elementName + " [" + debug +" ]");
-            } else {
+            } else if (reader.hasMoreChildren()){
                 enter = true;
                 System.out.println("Treating non-matching wrapper " + this.elementName + " at element " + reader.getNodeName() + " [" + debug +" ]");
+            } else {
+                System.out.println("Not treating non-matching wrapper " + this.elementName + " at element " + reader.getNodeName() + " [" + debug +" ]");
+                return;
             }
 
             if (enter){
@@ -334,7 +343,8 @@ public class ImperativeConverter<T, TImpl> implements Converter {
                 if (reader.getNodeName().equals(this.elementName)) {
                     System.out.println("Treating wrapper " + this.elementName + " [" + debug +" ]");
                 } else {
-                    throw new IllegalStateException("Unexpected child element " + reader.getNodeName() + " / expected: " + this.elementName);
+                    //throw new IllegalStateException("Unexpected child element " + reader.getNodeName() + " / expected: " + this.elementName);
+                    return;
                 }
             }
 
@@ -357,11 +367,11 @@ public class ImperativeConverter<T, TImpl> implements Converter {
         }
 
         static <S, SImpl, T, TImpl> InElement<S, SImpl, T, T> in(String elementName, Function<S, T> transformer, Class<T> targetType, BiConsumer<SImpl, T> reaffecter) {
-            return new InElement<>(elementName, transformer, s -> new UnmarshalTarget<>(t -> reaffecter.accept(s.get(), t)), recurse(targetType), "(name, transformer, type)");
+            return new InElement<>(elementName, transformer, s -> new UnmarshalTarget<>(t -> reaffecter.accept(s.get().orElseThrow(IllegalStateException::new), t)), recurse(targetType), "(name, transformer, type)");
         }
 
         private static <S, SImpl, T, TImpl> InElement<S, SImpl, T, TImpl> in(String elementName, Function<S, T> transformer, Item<T, TImpl> delegate, BiConsumer<SImpl, TImpl> reaffecter) {
-            return new InElement<>(elementName, transformer, s -> new UnmarshalTarget<>(t -> reaffecter.accept(s.get(), t)), delegate, "(name, transformer, type, delegate)");
+            return new InElement<>(elementName, transformer, s -> new UnmarshalTarget<>(t -> reaffecter.accept(s.get().orElseThrow(IllegalStateException::new), t)), delegate, "(name, transformer, type, delegate)");
         }
     }
 
@@ -589,14 +599,11 @@ public class ImperativeConverter<T, TImpl> implements Converter {
 //        }
         
         
-        public TImpl get(){
+        public Optional<TImpl> get(){
             if (this.value == null && this.supplier != null){
                 this.value = this.supplier.get();
             }
-            if (this.value == null){
-                throw new IllegalStateException("value not set");
-            }
-            return this.value;
+            return Optional.ofNullable(this.value);
         }
         
         public void set(TImpl value){

@@ -48,6 +48,11 @@ public final class DefaultFight implements Fight {
     }
 
     public void add(Participant participant) {
+
+        if (! participant.isActor() && ! participant.isTarget()){
+            throw new IllegalArgumentException("Participant is neither an actor nor a target: " + participant);
+        }
+
         if (participant.isActor()){
             this.actors.add(participant.asActor().get());
         }
@@ -83,6 +88,8 @@ public final class DefaultFight implements Fight {
     public int getLastRoundNumber() {
         return roundCount;
     }
+
+    public void setLastRoundNumber(int count){ this.roundCount = count; }
 
     public DefaultRound startRound() {
         if (this.currentRound != null){

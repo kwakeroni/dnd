@@ -4,6 +4,7 @@ import active.engine.event.EventBrokerSupport;
 import active.model.action.ActionType;
 import active.model.cat.Description;
 import active.model.cat.Observable;
+import active.model.creature.Creature;
 import active.model.creature.event.CreatureEventStream;
 import active.model.effect.Hit;
 import active.model.cat.Actor;
@@ -27,28 +28,50 @@ import java.util.function.Consumer;
  */
 public final class DefaultParticipant implements Participant, Actor, Hittable {
 
-    private final String name;
-    private final Actor actor;
-    private final Hittable target;
-    private final Observable<CreatureEventStream> creature;
+    private String name;
+    private Actor actor;
+    private Hittable target;
+    private Observable<CreatureEventStream> creature;
     private Score initiative;
     private Collection<ActionType> actionTypes;
 
-    public static Participant ofUntouchable(String name, Actor actor){
-        return new DefaultParticipant(name, actor, null, null);
-    }
+//    public static Participant ofUntouchable(String name, Actor actor){
+//        return new DefaultParticipant(name, actor, null, null);
+//    }
+//
+//    public static Participant ofObject(String name, Hittable target){
+//        return new DefaultParticipant(name, null, target, null);
+//    }
 
-    public static Participant ofObject(String name, Hittable target){
-        return new DefaultParticipant(name, null, target, null);
-    }
+    public static Participant ofCreature(Creature character){
+        DefaultParticipant participant = new DefaultParticipant();
+        participant.setAsCreature(character);
 
-    public static <P extends Object & Actor & Hittable & Observable<CreatureEventStream>> Participant ofCreature(P character){
-        DefaultParticipant participant = new DefaultParticipant(character.getName(), character, character, character);
-        participant.setActionTypes(character.getActions());
         Roll<D20> roll = Roll.D20();
         participant.setInitiative(roll);
         System.out.println("Rolling initiative for " + participant.getName() + ": " + roll + " " + character.getInitiativeModifier() + " = " + participant.getInitiative());
         return participant;
+    }
+
+    public Creature getAsCreature(){
+        if (this.target == this.creature
+                && this.actor == this.creature
+                && this.creature instanceof Creature){
+            return (Creature) this.creature;
+        }
+        return null;
+    }
+
+    public void setAsCreature(Creature creature){
+        this.name = creature.getName();
+        this.target = creature;
+        this.actor = creature;
+        this.creature = creature;
+        this.actionTypes = creature.getActions();
+    }
+
+    private DefaultParticipant(){
+
     }
 
     private DefaultParticipant(String name, Actor actor, Hittable target, Observable<CreatureEventStream> creature) {
@@ -138,4 +161,6 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
     public Collection<ActionType> getActions() {
         return this.actionTypes;
     }
+
+
 }

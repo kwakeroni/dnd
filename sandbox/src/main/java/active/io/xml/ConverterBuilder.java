@@ -75,7 +75,8 @@ public class ConverterBuilder<T, TImpl, CB extends ConverterBuilder<T, TImpl, CB
                 containerName,
                 elementType,
                 from.andThen(Stream::iterator),
-                (TImpl t, Iterator<SImpl> iter) -> iter.forEachRemaining(s -> addTo.accept(t, s)));
+                (TImpl t, Iterator<SImpl> iter) -> iter.forEachRemaining(
+                        s -> addTo.accept(t, s)));
     }
 
 

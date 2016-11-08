@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 public class DefaultCreature implements Creature {
     
     private String name;
-    private final Map<Statistic<?>, Object> statistics = new HashMap<>();
+    private final Map<Statistic<?>, Object> statistics = new LinkedHashMap<>();
     private EventBrokerSupport<CreatureEventStream> broker;
     private Collection<ActionType> actionTypes;
 
