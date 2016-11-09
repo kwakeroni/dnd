@@ -15,6 +15,7 @@ public class Config {
 
     Config(Properties properties) {
         this.properties = properties;
+        System.out.println("Config of type " + this.getClass().getName());
     }
 
     public <T> T get(Setting<T> setting){

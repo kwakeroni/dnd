@@ -1,4 +1,4 @@
-package active.engine.gui.swing;
+package active.engine.gui.swing.fight;
 
 import active.engine.internal.action.category.FightAction;
 import active.engine.internal.action.type.AttackActionType;
@@ -6,7 +6,7 @@ import active.model.action.ActionType;
 import active.model.fight.command.Attack;
 
 import javax.swing.*;
-import java.awt.Dimension;
+import java.awt.Frame;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +22,7 @@ public class AttackWindow {
     private JPanel attackPanel;
     private AttackInstancePane instancePane;
 
-    public AttackWindow(JFrame parent, Attack.AttackData attack) {
+    public AttackWindow(Frame parent, Attack.AttackData attack) {
         this.window = new JDialog(parent, "Attack", true);
 
         List<ActionType> actions = attack

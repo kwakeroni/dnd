@@ -179,6 +179,16 @@ public class XMLFormat {
             this.version = LAST_VERSION;
         }
 
+        public DndData(Party party){
+            this();
+            add(party);
+        }
+
+        public DndData(Fight fight){
+            this();
+            this.fight = fight;
+        }
+
         public DndData add(Party party){
             this.parties.add(party);
             return this;

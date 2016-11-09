@@ -39,7 +39,8 @@ public class ConfigProvider {
     }
 
     private static Path getDefaultConfigFile() {
-        Path userDir = Paths.get(System.getProperty("user.dir"));
+        Path userDir = Paths.get(System.getProperty("user.home"));
+        System.out.println("User home at: " + userDir + " = " + userDir.toAbsolutePath());
         return userDir.resolve(".dnd-engine.cfg");
     }
 
@@ -52,6 +53,7 @@ public class ConfigProvider {
     }
 
     static void store(Path path, Properties properties) throws IOException {
+        System.out.println("Storing config to " + path);
         try (OutputStream stream = Files.newOutputStream(path)) {
             properties.store(stream, "DND Engine Config");
         }

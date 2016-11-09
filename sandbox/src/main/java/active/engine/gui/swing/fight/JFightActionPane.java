@@ -1,6 +1,7 @@
-package active.engine.gui.swing;
+package active.engine.gui.swing.fight;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -15,10 +16,10 @@ import active.model.fight.event.FightData;
 
 public class JFightActionPane implements FightActions<JButton> {
 
-    private CommandHandler handler;
+    private Supplier<CommandHandler> handler;
     private JPanel panel;
     
-    public JFightActionPane(CommandHandler handler, FightData fight){
+    public JFightActionPane(Supplier<CommandHandler> handler, FightData fight){
         this.panel = new JPanel();
         this.panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         
@@ -31,7 +32,7 @@ public class JFightActionPane implements FightActions<JButton> {
     public JButton addActionGUI(String name, Character mnemonic, Command command) {
         JButton button = new JButton(name);
         button.addActionListener(a -> {
-            handler.execute(command);});
+            handler.get().execute(command);});
         if (mnemonic != null) {
             button.setMnemonic(mnemonic);
         }
@@ -44,7 +45,7 @@ public class JFightActionPane implements FightActions<JButton> {
         jButton.setEnabled(enabled);
     }
 
-    JComponent component(){
+    public JComponent component(){
         return this.panel;
     }
 

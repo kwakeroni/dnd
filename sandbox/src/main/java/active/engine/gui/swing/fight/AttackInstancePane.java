@@ -1,4 +1,4 @@
-package active.engine.gui.swing;
+package active.engine.gui.swing.fight;
 
 import active.engine.gui.swing.support.TableLayout;
 import active.engine.internal.action.type.AttackActionType;

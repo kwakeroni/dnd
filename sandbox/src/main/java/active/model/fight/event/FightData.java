@@ -22,6 +22,10 @@ public class FightData {
         this.fight = fight;
     }
 
+    public Fight getFight(){
+        return this.fight;
+    }
+
     public Datum<Stream<Participant>> participants(){
         return new Datum<Stream<Participant>>() {
             @Override

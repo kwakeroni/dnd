@@ -51,4 +51,9 @@ class SwingCommandHandler implements CommandHandler {
     public <C> void registerContext(Class<C> contextType, C context) {
         this.delegate.registerContext(contextType, context);
     }
+
+    @Override
+    public void unregisterContext(Object context) {
+        this.delegate.unregisterContext(context);
+    }
 }

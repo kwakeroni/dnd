@@ -12,5 +12,9 @@ public class CommandHandlerSupport implements CommandHandler {
     public <C> void registerContext(Class<C> contextType, C context){
         this.context.register(contextType, context);
     }
-    
+
+    @Override
+    public void unregisterContext(Object context) {
+        this.context.unregister(context);
+    }
 }

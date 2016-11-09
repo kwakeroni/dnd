@@ -1,6 +1,7 @@
-package active.engine.gui.swing;
+package active.engine.gui.swing.fight;
 
 import active.engine.gui.business.CharacterList;
+import active.engine.gui.swing.Snapshot;
 import active.engine.gui.swing.support.ContainerAdapter;
 import active.engine.gui.swing.support.TableLayout;
 import active.model.fight.Participant;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 
 import static active.engine.gui.swing.MouseListenerSupport.onMouseClicked;
 
-class JCharacterList implements CharacterList, ContainerAdapter {
+public class JCharacterList implements CharacterList, ContainerAdapter {
 
     private static final Insets INSETS = new Insets(4, 8, 4, 8);
 
@@ -29,7 +30,7 @@ class JCharacterList implements CharacterList, ContainerAdapter {
     private final JPanel panel = new JPanel();
     private Map<String, JParticipantLine> lines = new HashMap<>();
 
-    JCharacterList(FightData fightData) {
+    public JCharacterList(FightData fightData) {
         TableLayout layout = new TableLayout(this.panel, true, 24, 12);
         this.panel.setLayout(layout);
         this.data = fightData;

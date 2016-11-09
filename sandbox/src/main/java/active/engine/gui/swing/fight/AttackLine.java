@@ -1,4 +1,4 @@
-package active.engine.gui.swing;
+package active.engine.gui.swing.fight;
 
 import static active.engine.gui.swing.support.builder.SwingBuilders.*;
 import static java.util.stream.Collectors.*;
@@ -10,7 +10,6 @@ import active.model.cat.Hittable;
 import active.model.die.D20;
 import active.model.die.Dice;
 import active.model.die.Die;
-import active.model.die.Roll;
 import active.model.effect.Attack;
 import active.model.effect.Damage;
 import active.model.event.Reaction;

@@ -14,6 +14,7 @@ class FileBackedConfig extends Config {
     FileBackedConfig(Path configFile, Properties configProperties) {
         super(configProperties);
         this.configFile = configFile;
+        System.out.println("Config in file " + this.configFile.toAbsolutePath());
     }
 
     @Override

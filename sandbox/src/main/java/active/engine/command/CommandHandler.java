@@ -5,5 +5,6 @@ public interface CommandHandler {
     void execute(Command command);
 
     public <C> void registerContext(Class<C> contextType, C context);
-    
+
+    public void unregisterContext(Object context);
 }

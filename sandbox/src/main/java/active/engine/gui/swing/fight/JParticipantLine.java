@@ -1,10 +1,7 @@
-package active.engine.gui.swing;
+package active.engine.gui.swing.fight;
 
 import active.engine.gui.business.ParticipantData;
 import active.engine.gui.swing.support.ContainerAdapter;
-import active.model.cat.Actor;
-import active.model.cat.Hittable;
-import active.model.creature.event.StatChanged;
 import active.model.creature.stats.Base;
 import active.model.creature.stats.Mod;
 import active.model.creature.stats.Statistic;
@@ -13,13 +10,10 @@ import active.model.fight.Participant;
 import javax.swing.*;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * @author Maarten Van Puymbroeck

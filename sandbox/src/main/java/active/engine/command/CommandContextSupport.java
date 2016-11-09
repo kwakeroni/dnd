@@ -22,4 +22,7 @@ public class CommandContextSupport implements CommandContext {
         this.contexts.put(type, context);
     }
 
+    public void unregister(Object context){
+        this.contexts.values().remove(context);
+    }
 }
