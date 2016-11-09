@@ -2,6 +2,8 @@ package active.engine.gui.swing.fight;
 
 import active.engine.gui.business.ParticipantData;
 import active.engine.gui.swing.support.ContainerAdapter;
+import active.engine.gui.swing.support.EditableJLabel;
+import active.engine.util.gui.swing.LabelBuilder;
 import active.model.creature.stats.Base;
 import active.model.creature.stats.Mod;
 import active.model.creature.stats.Statistic;
@@ -21,12 +23,12 @@ import java.util.Map;
 class JParticipantLine extends CharacterLine<Participant> implements ParticipantData, ContainerAdapter {
 
     private final Participant participant;
-    private final Map<Statistic<?>, JLabel> components;
+    private final Map<Statistic<?>, EditableJLabel> components;
 
     public JParticipantLine(Participant participant){
         this.participant = participant;
 
-        LinkedHashMap<Statistic<?>, JLabel> map = new LinkedHashMap<>(3);
+        LinkedHashMap<Statistic<?>, EditableJLabel> map = new LinkedHashMap<>(3);
         map.put(Base.NAME, name());
         map.put(Mod.INIT, init());
         map.put(Base.HP, hp());
@@ -46,16 +48,20 @@ class JParticipantLine extends CharacterLine<Participant> implements Participant
         components.get(stat).setText(String.valueOf(newValue));
     }
 
-    private JLabel name(){
-        return newLabel(participant.getName()).right().create();
+    private EditableJLabel name(){
+        return editable(newLabel(participant.getName()).right());
     }
 
-    private JLabel init(){
-        return newLabel(participant.getInitiative().map(Object::toString).orElse("")).center().create();
+    private EditableJLabel init(){
+        return editable(newLabel(participant.getInitiative().map(Object::toString).orElse("")).center());
     }
 
-    private JLabel hp(){
-        return newLabel(participant.asTarget().map(h -> h.getHP()).map(Object::toString).orElse("")).center().create();
+    private EditableJLabel hp(){
+        return editable(newLabel(participant.asTarget().map(h -> h.getHP()).map(Object::toString).orElse("")).center());
+    }
+
+    private EditableJLabel editable(LabelBuilder label){
+        return new EditableJLabel(label.create());
     }
 
     public Participant getParticipant(){
@@ -69,12 +75,12 @@ class JParticipantLine extends CharacterLine<Participant> implements Participant
 
     @Override
     public void select() {
-        this.components.values().forEach(label -> { label.setOpaque(true); label.repaint(); });
+        this.components.values().forEach(label -> { label.getBackingLabel().setOpaque(true); label.repaint(); });
     }
 
     @Override
     public void deselect() {
-        this.components.values().forEach(label -> { label.setOpaque(false); label.repaint(); });
+        this.components.values().forEach(label -> { label.getBackingLabel().setOpaque(false); label.repaint(); });
     }
     
     
