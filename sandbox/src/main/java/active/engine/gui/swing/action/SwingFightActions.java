@@ -17,6 +17,8 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import static active.engine.gui.swing.ImportFileBuilder.selectFile;
@@ -73,6 +75,21 @@ public class SwingFightActions {
         };
     }
 
+    public static Action exportFight(Supplier<Component> parent, Supplier<Fight> fight){
+        Action exportAs = exportFightAs(parent, fight);
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Optional<File> current = SwingConfigProvider.getLocalProperty(SwingConfigProvider.Local.CURRENT_FIGHT_FILE);
+                if (current.isPresent()){
+                    IOActions.exportFight(current.get(), fight.get());
+                } else {
+                    exportAs.actionPerformed(e);
+                }
+            }
+        };
+    }
+
     public static Action exportFightAs(Supplier<Component> parent, Supplier<Fight> fight) {
         return new AbstractAction() {
             @Override
@@ -86,9 +103,12 @@ public class SwingFightActions {
                         .andThen(file -> {
                             SwingConfigProvider.getConfig().set(Directories.SAVE_FIGHT_DIRECTORY, file.getParentFile().toPath());
                             IOActions.exportFight(file, fight.get());
+                            SwingConfigProvider.setLocalProperty(SwingConfigProvider.Local.CURRENT_FIGHT_FILE, file);
                         });
             }
         };
     }
+
+
 
 }

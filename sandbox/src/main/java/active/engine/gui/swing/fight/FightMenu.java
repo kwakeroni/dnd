@@ -55,12 +55,18 @@ public class FightMenu implements PluggableMenu {
         importParty.setAccelerator(ctrl('I'));
         importParty.setText("Import Party...");
 
+        JMenuItem saveFight = new JMenuItem("Save Fight", 'S');
+        fightMenu.add(saveFight);
+        saveFight.setAction(SwingFightActions.exportFight(this::getParentWindow, fight));
+        saveFight.setMnemonic('S');
+        saveFight.setAccelerator(ctrl('S'));
+        saveFight.setText("Save Fight");
+
         JMenuItem saveFightAs = new JMenuItem("Save Fight As...", 'S');
         fightMenu.add(saveFightAs);
         saveFightAs.setAction(SwingFightActions.exportFightAs(this::getParentWindow, fight));
         saveFightAs.setMnemonic('A');
         saveFightAs.setAccelerator(ctrl(shift('S')));
-//        saveFightAs.setAccelerator(KeyStroke.getKeyStroke(Character.valueOf('S'), 0));
         saveFightAs.setText("Save Fight As...");
 
         fightMenu.setMnemonic('F');
