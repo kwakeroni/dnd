@@ -8,6 +8,7 @@ import java.nio.file.Paths;
  */
 public enum Directories implements Setting<Path> {
     IMPORT_PARTY_DIRECTORY("directory.in.party"),
+    LOAD_FIGHT_DIRECTORY("directory.in.fight"),
     SAVE_FIGHT_DIRECTORY("directory.out.fight")
     ;
 

@@ -1,4 +1,4 @@
-package active.engine.gui.swing;
+package active.engine.gui.swing.menu;
 
 import javax.swing.JMenuBar;
 

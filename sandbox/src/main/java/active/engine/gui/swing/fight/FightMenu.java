@@ -1,8 +1,7 @@
 package active.engine.gui.swing.fight;
 
-import active.engine.command.CommandHandler;
 import active.engine.gui.swing.GUIController;
-import active.engine.gui.swing.PluggableMenu;
+import active.engine.gui.swing.menu.PluggableMenu;
 import active.engine.gui.swing.action.SwingBaseActions;
 import active.engine.gui.swing.action.SwingFightActions;
 import active.model.fight.Fight;
@@ -44,7 +43,7 @@ public class FightMenu implements PluggableMenu {
 
         JMenuItem endFight = new JMenuItem("End Fight", 'E');
         fightMenu.add(endFight);
-        endFight.setAction(SwingBaseActions.endFight(gui));
+        endFight.setAction(SwingFightActions.endFight(gui));
         endFight.setMnemonic('E');
         endFight.setText("End Fight");
 

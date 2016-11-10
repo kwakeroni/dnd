@@ -64,7 +64,7 @@ public class XMLFormat {
                         .withElements(Party.class, data -> data.parties, DndData::add)
                             .as("party")
                             .done()
-                        .withElement("fight", Fight.class, data -> data.fight, (data, fight) -> data.fight = fight)
+                        .withElement("fight", Fight.class, data -> data.fight, (data, fight) -> data.setFight((DefaultFight)fight))
                 )
             .and(Fight.class)
                 .implementedBy(DefaultFight.class)
@@ -197,5 +197,12 @@ public class XMLFormat {
         public int getVersion(){return this.version;}
         public void setVersion(int version){ this.version = version; }
 
+        public DefaultFight getFight(){
+            return (DefaultFight) this.fight;
+        }
+
+        public void setFight(DefaultFight fight){
+            this.fight = fight;
+        }
     }
 }
