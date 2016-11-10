@@ -90,14 +90,25 @@ public class JCharacterList implements CharacterList, ContainerAdapter {
             snapshot.get().ifPresent(Snapshot::restore);
         });
 
-        snapshot.set(Optional.of(modify(c -> c.addMouseListener(listener), c -> c.removeMouseListener(listener))));
+        snapshot.set(Optional.of(modify(
+                c -> c.addMouseListener(listener),
+                c -> c.removeMouseListener(listener))));
     }
 
     private Optional<Participant> participantOf(Component component) {
-        return lines.values().stream()
-                .filter(line -> line.components().contains(component))
-                .findAny()
-                .map(JParticipantLine::getParticipant);
+        if (component == null || component == this.panel){
+            return Optional.empty();
+        } else {
+            Optional<Participant> result = lines.values().stream()
+                    .filter(line -> line.components().contains(component))
+                    .findAny()
+                    .map(JParticipantLine::getParticipant);
+            if (result.isPresent()){
+                return result;
+            } else {
+                return participantOf(component.getParent());
+            }
+        }
     }
 
     @Override

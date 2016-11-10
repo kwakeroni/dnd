@@ -46,7 +46,7 @@ public interface ContainerAdapter extends Iterable<Component> {
                                 BiConsumer<? super Component, S> action,
                                 Function<? super Component, S> originalState,
                                 BiConsumer<? super Component, S> restoreAction){
-        return ContainerAdapterHelper.modify(newState, action, originalState, restoreAction, components().stream());
+        return ContainerAdapterHelper.modify(newState, action, originalState, restoreAction, componentStream());
     }
 
 }
