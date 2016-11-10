@@ -43,8 +43,11 @@ public class BattleField {
     public Stream<Participant> participants() { return this.participants.stream(); }
 
     public FightController startFight(){
-
-        DefaultFight fight = new DefaultFight();
+        return resumeFight(new DefaultFight(), fight -> {
+            this.participants.forEach(fight::add);
+        });
+    }
+    public FightController resumeFight(DefaultFight fight, Consumer<DefaultFight> initializer){
 
         Function<EventStream, FightEventStream> fightEventStream = (EventStream source) -> (FightEventStream) source::event;
         EventBroker<FightEventStream> fes = this.broker.supplying((EventStream source) -> (FightEventStream) source::event);
@@ -61,8 +64,9 @@ public class BattleField {
                 )
                 ;
 
-        fight.setBroker(broker);
-        this.participants.forEach(fight::add);
+            fight.setBroker(broker);
+
+            initializer.accept(fight);
 
         return new DefaultFightController(fight, broker);
     }

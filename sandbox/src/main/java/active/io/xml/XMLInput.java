@@ -1,5 +1,6 @@
 package active.io.xml;
 
+import active.engine.internal.fight.DefaultFight;
 import active.model.creature.Party;
 
 import java.io.*;
@@ -36,4 +37,15 @@ public class XMLInput {
         }
     }
 
+
+    public DefaultFight readFight() throws IOException {
+        return XMLFormat.importData().apply(this.source).getFight();
+    }
+
+
+    public static DefaultFight readFight(File file) throws IOException {
+        try (InputStream input = new FileInputStream(file)){
+            return new XMLInput(input).readFight();
+        }
+    }
 }

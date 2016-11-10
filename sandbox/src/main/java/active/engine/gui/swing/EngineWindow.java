@@ -1,31 +1,17 @@
 package active.engine.gui.swing;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
 
 import active.engine.command.CommandHandler;
 import active.engine.event.EventBroker;
-import active.engine.gui.InteractionHandler;
-import active.engine.gui.swing.action.SwingFightActions;
-import active.engine.gui.swing.fight.*;
-import active.engine.gui.swing.support.ContainerAdapter;
+import active.engine.gui.swing.menu.PluggableMenu;
 import active.engine.internal.fight.BattleField;
 import active.engine.util.gui.swing.WindowAdapter;
 import active.model.event.*;
 import active.model.event.Event;
-import active.model.fight.Participant;
-import active.model.fight.command.Attack;
-import active.model.fight.event.FightData;
 
 public class EngineWindow implements GUIController {
 
@@ -120,15 +106,16 @@ public class EngineWindow implements GUIController {
         }
     }
 
-    private Datum<Object> content(){
-        return new Datum<Object>() {
+
+    public Datum<PluggableContent> content(){
+        return new Datum<PluggableContent>() {
             @Override
             public void onChanged(Consumer<Event> consumer) {
                 broker.on().event().filter(CONTENT_CHANGE::equals).forEach(consumer);
             }
 
             @Override
-            public Object get() {
+            public PluggableContent get() {
                 return content;
             }
         };

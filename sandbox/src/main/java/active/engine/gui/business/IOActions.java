@@ -1,6 +1,7 @@
 package active.engine.gui.business;
 
 import active.engine.command.CommandHandler;
+import active.engine.internal.fight.DefaultFight;
 import active.io.xml.XMLInput;
 import active.io.xml.XMLOutput;
 import active.model.creature.Party;
@@ -32,6 +33,14 @@ public interface IOActions {
             XMLOutput.writeToFile(fight, file);
         } catch (Exception exc){
             exc.printStackTrace();
+        }
+    }
+
+    public static DefaultFight importFight(File file){
+        try {
+            return XMLInput.readFight(file);
+        } catch (Exception exc){
+            throw new RuntimeException(exc);
         }
     }
 
