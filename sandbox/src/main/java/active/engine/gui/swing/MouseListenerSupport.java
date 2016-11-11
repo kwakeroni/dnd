@@ -23,6 +23,22 @@ public class MouseListenerSupport implements MouseListener {
         };
     }
 
+    public static MouseListener onMouseDoubleClicked(Consumer<? super MouseEvent> consumer){
+        return onMouseClicked(2, consumer);
+    }
+
+    public static MouseListener onMouseClicked(int times, Consumer<? super MouseEvent> consumer){
+        return new MouseListenerSupport(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == times) {
+                    consumer.accept(e);
+                }
+            }
+        };
+    }
+
+
     @Override
     public void mousePressed(MouseEvent e) {
 

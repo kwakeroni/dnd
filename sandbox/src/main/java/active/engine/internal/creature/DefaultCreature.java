@@ -62,19 +62,21 @@ public class DefaultCreature implements Creature {
         return s;
     }
 
+
     public <S> void addStatistic(StatisticEntry<S> entry){
-        statistics.put(entry.getStat(), entry.getValue());
+        setStat(entry.getStat(), entry.getValue());
     }
 
-    public <S> void set(Statistic<S> stat, S value){
-        S oldValue = get(stat);
+    @Override
+    public <S> void setStat(Statistic<S> stat, S value){
+        S oldValue = (S) statistics.get(stat);
         statistics.put(stat, value);
 
         this.broker.fire(new StatChanged<>(stat, oldValue, value));
     }
 
     private <S> void modify(Statistic<S> stat, UnaryOperator<S> op){
-        set(stat, op.apply(get(stat)));
+        setStat(stat, op.apply(get(stat)));
     }
 
     @Override

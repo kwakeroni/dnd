@@ -6,6 +6,7 @@ import active.model.cat.Description;
 import active.model.cat.Observable;
 import active.model.creature.Creature;
 import active.model.creature.event.CreatureEventStream;
+import active.model.creature.stats.Statistic;
 import active.model.effect.Hit;
 import active.model.cat.Actor;
 import active.model.cat.Hittable;
@@ -162,5 +163,11 @@ public final class DefaultParticipant implements Participant, Actor, Hittable {
         return this.actionTypes;
     }
 
-
+    @Override
+    public <S> void setStat(Statistic<S> stat, S value) {
+        Creature creature = getAsCreature();
+        if (creature != null) {
+            creature.setStat(stat, value);
+        }
+    }
 }

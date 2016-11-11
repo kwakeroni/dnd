@@ -15,6 +15,8 @@ public interface ParticipantData {
         participant.on()
                 .statChanged()
                 .forEach(sc -> update(sc));
+
+        setStatUpdateListener(participant::setStat);
     }
 
     default <S> void update(StatChanged<S> event){
@@ -29,4 +31,10 @@ public interface ParticipantData {
     boolean has(Statistic<?> stat);
 
     <S> void update(Statistic<S> stat, S oldValue, S newValue);
+
+    void setStatUpdateListener(StatUpdateListener listener);
+
+    interface StatUpdateListener {
+        <S> void onStatUpdate(Statistic<S> stat, S value);
+    }
 }

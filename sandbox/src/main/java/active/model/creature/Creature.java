@@ -23,4 +23,5 @@ public interface Creature extends Actor, Hittable, Named, Observable<CreatureEve
     Stream<StatisticEntry<?>> statistics();
     Stream<ActionType> actions();
 
+    <S> void setStat(Statistic<S> stat, S value);
 }
