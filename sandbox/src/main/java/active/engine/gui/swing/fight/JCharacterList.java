@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static active.engine.gui.swing.MouseListenerSupport.onMouseClicked;
+import static active.engine.gui.swing.support.listener.MouseListenerSupport.onMouseClicked;
 
 public class JCharacterList implements CharacterList, ContainerAdapter {
 
