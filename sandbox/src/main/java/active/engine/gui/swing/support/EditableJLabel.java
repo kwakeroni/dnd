@@ -4,6 +4,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import java.awt.CardLayout;
+import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.util.PrimitiveIterator;
 import java.util.concurrent.ThreadLocalRandom;
@@ -47,6 +48,7 @@ public class EditableJLabel extends JPanel {
 
         PrimitiveIterator.OfInt ints = ThreadLocalRandom.current().ints(0, 255).iterator();
 
+        this.label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         this.label.addMouseListener(onMouseDoubleClicked(this::requestInput));
         this.field.addFocusListener(onFocusLost(this::processInput));
         this.field.addKeyListener(onKeyTyped(e -> {
