@@ -7,16 +7,18 @@ import java.util.function.Consumer;
 /**
  * (C) 2016 Maarten Van Puymbroeck
  */
-public abstract class MouseListenerSupport implements MouseListener {
+public interface MouseListenerSupport extends MouseListener {
 
     @Override
-    public void mouseClicked(MouseEvent e) { }
+    default void mouseClicked(MouseEvent e) {
+    }
 
-    public static MouseListener onMouseClicked(Reaction reaction){
+    public static MouseListenerSupport onMouseClicked(Reaction reaction) {
         return onMouseClicked(e -> reaction.react());
     }
-    public static MouseListener onMouseClicked(Consumer<? super MouseEvent> consumer){
-        return new MouseListenerSupport(){
+
+    public static MouseListenerSupport onMouseClicked(Consumer<? super MouseEvent> consumer) {
+        return new MouseListenerSupport() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 consumer.accept(e);
@@ -24,18 +26,20 @@ public abstract class MouseListenerSupport implements MouseListener {
         };
     }
 
-    public static MouseListener onMouseDoubleClicked(Reaction reaction){
+    public static MouseListenerSupport onMouseDoubleClicked(Reaction reaction) {
         return onMouseDoubleClicked(e -> reaction.react());
     }
-    public static MouseListener onMouseDoubleClicked(Consumer<? super MouseEvent> consumer){
+
+    public static MouseListenerSupport onMouseDoubleClicked(Consumer<? super MouseEvent> consumer) {
         return onMouseClicked(2, consumer);
     }
 
-    public static MouseListener onMouseClicked(int times, Reaction reaction){
+    public static MouseListenerSupport onMouseClicked(int times, Reaction reaction) {
         return onMouseClicked(times, e -> reaction.react());
     }
-    public static MouseListener onMouseClicked(int times, Consumer<? super MouseEvent> consumer){
-        return new MouseListenerSupport(){
+
+    public static MouseListenerSupport onMouseClicked(int times, Consumer<? super MouseEvent> consumer) {
+        return new MouseListenerSupport() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == times) {
@@ -47,14 +51,97 @@ public abstract class MouseListenerSupport implements MouseListener {
 
 
     @Override
-    public void mousePressed(MouseEvent e) { }
+    default void mousePressed(MouseEvent e) {
+    }
 
     @Override
-    public void mouseReleased(MouseEvent e) { }
+    default void mouseReleased(MouseEvent e) {
+    }
 
     @Override
-    public void mouseEntered(MouseEvent e) { }
+    default void mouseEntered(MouseEvent e) {
+    }
+
+    public static MouseListenerSupport onMouseEntered(Reaction reaction) {
+        return onMouseEntered(e -> reaction.react());
+    }
+
+    public static MouseListenerSupport onMouseEntered(Consumer<MouseEvent> consumer) {
+        return new MouseListenerSupport() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                consumer.accept(e);
+            }
+        };
+    }
+
 
     @Override
-    public void mouseExited(MouseEvent e) { }
+    default void mouseExited(MouseEvent e) {
+    }
+
+    public static MouseListenerSupport onMouseExited(Reaction reaction) {
+        return onMouseExited(e -> reaction.react());
+    }
+
+    public static MouseListenerSupport onMouseExited(Consumer<MouseEvent> consumer) {
+        return new MouseListenerSupport() {
+            @Override
+            public void mouseExited(MouseEvent e) {
+                consumer.accept(e);
+            }
+        };
+    }
+
+        public static MouseListenerSupport onMouseHover(Reaction onEnter, Reaction onExit){
+                return onMouseHover(e -> onEnter.react(), e-> onExit.react());
+            }
+            public static MouseListenerSupport onMouseHover(Consumer<MouseEvent> onEnter, Consumer<MouseEvent> onExit){
+                return onMouseEntered(onEnter)
+                        .and(onMouseExited(onExit));
+            }
+
+
+    public default MouseListenerSupport and(MouseListener other) {
+
+        class Composed implements MouseListenerSupport {
+            private final MouseListener two;
+
+            Composed(MouseListener two) {
+                this.two = two;
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                MouseListenerSupport.this.mouseClicked(e);
+                two.mouseClicked(e);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                MouseListenerSupport.this.mouseEntered(e);
+                two.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                MouseListenerSupport.this.mouseExited(e);
+                two.mouseExited(e);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                MouseListenerSupport.this.mousePressed(e);
+                two.mousePressed(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                MouseListenerSupport.this.mouseReleased(e);
+                two.mouseReleased(e);
+            }
+        }
+
+        return new Composed(other);
+    }
 }
