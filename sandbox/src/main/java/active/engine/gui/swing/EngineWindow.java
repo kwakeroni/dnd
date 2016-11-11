@@ -8,6 +8,7 @@ import javax.swing.*;
 import active.engine.command.CommandHandler;
 import active.engine.event.EventBroker;
 import active.engine.gui.swing.menu.PluggableMenu;
+import active.engine.gui.swing.support.JStatusBar;
 import active.engine.internal.fight.BattleField;
 import active.engine.util.gui.swing.WindowAdapter;
 import active.model.event.*;
@@ -20,6 +21,8 @@ public class EngineWindow implements GUIController {
     private final BattleField battleField;
     private final EventBroker<?> broker;
     private PluggableContent content;
+    private Container currentPaneContent;
+    private JStatusBar statusBar;
 
     public EngineWindow(BattleField battleField, CommandHandler appCommandHandler, EventBroker<?> broker){
 
@@ -34,7 +37,17 @@ public class EngineWindow implements GUIController {
         this.frame.addWindowListener(WindowAdapter.closing(event -> showCloseDialog()));
 
         this.frame.setJMenuBar(new BaseMenu(this, content()).component());
+        this.statusBar = new JStatusBar();
 
+        this.frame.getContentPane().setLayout(new BorderLayout());
+        this.frame.getContentPane().add(this.statusBar, BorderLayout.SOUTH);
+        clearContent(null);
+    }
+
+    private void setContentPane(Container content){
+        this.frame.getContentPane().remove(currentPaneContent);
+        this.frame.getContentPane().add(content, BorderLayout.CENTER);
+        this.currentPaneContent = content;
     }
     
     public void show(){
@@ -87,7 +100,7 @@ public class EngineWindow implements GUIController {
             throw new IllegalStateException("Other content already active");
         }
         this.content = content;
-        this.frame.setContentPane(content.getComponent());
+        setContentPane(content.getComponent());
         content.activate(this);
         this.broker.fire(CONTENT_CHANGE);
         this.frame.pack();
@@ -98,7 +111,7 @@ public class EngineWindow implements GUIController {
         if (this.content != null && (content == null || this.content.equals(content))){
             JPanel panel = new JPanel();
             panel.setLayout(new BorderLayout());
-            this.frame.setContentPane(panel);
+            setContentPane(panel);
             this.content.deactivate(this);
             this.content = null;
             this.broker.fire(CONTENT_CHANGE);
@@ -123,4 +136,9 @@ public class EngineWindow implements GUIController {
 
     private static final Event CONTENT_CHANGE = new Event() {
     };
+
+    @Override
+    public void setStatusBarText(String text) {
+        this.statusBar.setText(text);
+    }
 }

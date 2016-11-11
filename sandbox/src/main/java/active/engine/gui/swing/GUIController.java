@@ -20,4 +20,5 @@ public interface GUIController {
     void setContent(PluggableContent content);
     void clearContent(PluggableContent content);
     Datum<PluggableContent> content();
+    void setStatusBarText(String text);
 }
