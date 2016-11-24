@@ -34,13 +34,13 @@ public class FightPane implements InteractionHandler, ContainerAdapter, Pluggabl
     private final JPanel panel;
     private FightMenu fightMenu;
 
-    public FightPane(FightData fightData){
+    public FightPane(FightData fightData, GUIController gui){
         this.fightData = fightData;
 
         this.panel = new JPanel();
         this.panel.setLayout(new BorderLayout());
 
-        this.characterList = new JCharacterList(fightData);
+        this.characterList = new JCharacterList(fightData, gui);
         panel.add(this.characterList.component(), BorderLayout.CENTER);
 
         JPanel rightPane = new JPanel();

@@ -1,8 +1,10 @@
 package active.engine.gui.swing.fight;
 
 import active.engine.gui.business.ParticipantData;
+import active.engine.gui.swing.GUIController;
 import active.engine.gui.swing.support.ContainerAdapter;
 import active.engine.gui.swing.support.EditableJLabel;
+import active.engine.gui.swing.support.listener.MouseListenerSupport;
 import active.engine.util.gui.swing.LabelBuilder;
 import active.model.creature.stats.Base;
 import active.model.creature.stats.Mod;
@@ -25,12 +27,14 @@ import java.util.stream.Stream;
  */
 class JParticipantLine extends CharacterLine<Participant> implements ParticipantData, ContainerAdapter {
 
+    private final GUIController gui;
     private final Participant participant;
     private final Map<Statistic<?>, Element> elements;
     private StatUpdateListener statUpdateListener;
 
-    public JParticipantLine(Participant participant) {
+    public JParticipantLine(Participant participant, GUIController gui) {
         this.participant = participant;
+        this.gui = gui;
 
         LinkedHashMap<Statistic<?>, Element> map = new LinkedHashMap<>(3);
         map.put(Base.NAME, name());
@@ -73,6 +77,7 @@ class JParticipantLine extends CharacterLine<Participant> implements Participant
     private <S> Element editable(Statistic<S> stat, Function<String, S> transformer, LabelBuilder label) {
         EditableJLabel editable = new EditableJLabel(label.create());
         editable.setInputListener(string -> statUpdateListener.onStatUpdate(stat, transformer.apply(string)));
+        editable.getBackingLabel().addMouseListener(MouseListenerSupport.onMouseHover( () -> gui.pushStatusBarText("Double-click to edit attribute"), () -> gui.popStatusBarText("Double-click to edit attribute") ));
         return new EditableElement(editable);
     }
 

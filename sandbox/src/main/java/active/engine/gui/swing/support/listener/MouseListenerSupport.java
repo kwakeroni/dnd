@@ -93,13 +93,14 @@ public interface MouseListenerSupport extends MouseListener {
         };
     }
 
-        public static MouseListenerSupport onMouseHover(Reaction onEnter, Reaction onExit){
-                return onMouseHover(e -> onEnter.react(), e-> onExit.react());
-            }
-            public static MouseListenerSupport onMouseHover(Consumer<MouseEvent> onEnter, Consumer<MouseEvent> onExit){
-                return onMouseEntered(onEnter)
-                        .and(onMouseExited(onExit));
-            }
+    public static MouseListenerSupport onMouseHover(Reaction onEnter, Reaction onExit) {
+        return onMouseHover(e -> onEnter.react(), e -> onExit.react());
+    }
+
+    public static MouseListenerSupport onMouseHover(Consumer<MouseEvent> onEnter, Consumer<MouseEvent> onExit) {
+        return onMouseEntered(onEnter)
+                .and(onMouseExited(onExit));
+    }
 
 
     public default MouseListenerSupport and(MouseListener other) {

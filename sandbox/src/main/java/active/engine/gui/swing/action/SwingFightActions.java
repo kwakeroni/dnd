@@ -52,7 +52,7 @@ public class SwingFightActions {
 
         handler.registerContext(FightController.class, fight);
 
-        gui.setContent(new FightPane(fight.getData()));
+        gui.setContent(new FightPane(fight.getData(), gui));
 
         return fight;
     }

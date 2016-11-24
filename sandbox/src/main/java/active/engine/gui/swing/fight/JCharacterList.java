@@ -1,6 +1,7 @@
 package active.engine.gui.swing.fight;
 
 import active.engine.gui.business.CharacterList;
+import active.engine.gui.swing.GUIController;
 import active.engine.gui.swing.Snapshot;
 import active.engine.gui.swing.support.ContainerAdapter;
 import active.engine.gui.swing.support.TableLayout;
@@ -21,19 +22,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static active.engine.gui.swing.support.listener.MouseListenerSupport.onMouseClicked;
+import static active.engine.gui.swing.support.listener.MouseListenerSupport.onMouseHover;
 
 public class JCharacterList implements CharacterList, ContainerAdapter {
 
     private static final Insets INSETS = new Insets(4, 8, 4, 8);
 
     private FightData data;
+    private final GUIController gui;
     private final JPanel panel = new JPanel();
     private Map<String, JParticipantLine> lines = new HashMap<>();
 
-    public JCharacterList(FightData fightData) {
+    public JCharacterList(FightData fightData, GUIController gui) {
         TableLayout layout = new TableLayout(this.panel, true, 24, 12);
         this.panel.setLayout(layout);
         this.data = fightData;
+        this.gui = gui;
         initBehaviour(this.data);
     }
 
@@ -60,7 +64,7 @@ public class JCharacterList implements CharacterList, ContainerAdapter {
                 .forEach(named -> {
                     String name = named.getName();
 
-                    JParticipantLine line = getLine(name).orElseGet(() -> new JParticipantLine(named));
+                    JParticipantLine line = getLine(name).orElseGet(() -> new JParticipantLine(named, gui));
                     newLines.put(name, line);
 
                     TableLayout.addRow(this.panel, line);
@@ -88,7 +92,7 @@ public class JCharacterList implements CharacterList, ContainerAdapter {
         MouseListener listener = onMouseClicked(event -> {
             participantOf(event.getComponent()).ifPresent(action);
             snapshot.get().ifPresent(Snapshot::restore);
-        });
+        }).and(onMouseHover(() -> gui.pushStatusBarText("Target participant"), () -> gui.popStatusBarText("Target participant")));
 
         snapshot.set(Optional.of(modify(
                 c -> c.addMouseListener(listener),

@@ -45,8 +45,8 @@ public class EngineWindow implements GUIController {
     }
 
     private void setContentPane(Container content){
-        this.frame.getContentPane().remove(currentPaneContent);
-        this.frame.getContentPane().add(content, BorderLayout.CENTER);
+        if (this.currentPaneContent != null) this.frame.getContentPane().remove(currentPaneContent);
+        if (content != null) this.frame.getContentPane().add(content, BorderLayout.CENTER);
         this.currentPaneContent = content;
     }
     
@@ -138,7 +138,12 @@ public class EngineWindow implements GUIController {
     };
 
     @Override
-    public void setStatusBarText(String text) {
-        this.statusBar.setText(text);
+    public void pushStatusBarText(String text) {
+        this.statusBar.pushText(text);
+    }
+
+    @Override
+    public void popStatusBarText(String text) {
+        this.statusBar.popText(text);
     }
 }
