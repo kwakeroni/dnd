@@ -18,7 +18,7 @@ public abstract class CharacterLine<C extends Named> implements ContainerAdapter
     protected CharacterLine(){
     }
 
-    protected LabelBuilder newLabel(String text){
+    protected static LabelBuilder newLabel(String text){
         return LabelBuilder.of(text)
                            .middle()
                            .font(FONT)

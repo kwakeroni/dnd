@@ -4,6 +4,7 @@ import active.engine.gui.business.ParticipantData;
 import active.engine.gui.swing.GUIController;
 import active.engine.gui.swing.support.ContainerAdapter;
 import active.engine.gui.swing.support.EditableJLabel;
+import active.engine.gui.swing.support.FlexLineBorder;
 import active.engine.gui.swing.support.listener.MouseListenerSupport;
 import active.engine.util.gui.swing.LabelBuilder;
 import active.model.creature.stats.Base;
@@ -12,13 +13,14 @@ import active.model.creature.stats.Statistic;
 import active.model.fight.Participant;
 import active.model.value.Score;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.border.Border;
+import java.awt.Color;
 import java.awt.Component;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,6 +46,15 @@ class JParticipantLine extends CharacterLine<Participant> implements Participant
         this.elements = Collections.unmodifiableMap(map);
 
         initBehaviour(this.participant);
+    }
+
+    public static List<JComponent> header(){
+        Supplier<Border> border = () -> FlexLineBorder.bottom(Color.BLACK, 1);
+        return Arrays.asList(
+                newLabel("Name").right().border(border.get()).create(),
+                newLabel("INIT").center().border(border.get()).create(),
+                newLabel("HP").center().border(border.get()).create()
+        );
     }
 
     @Override

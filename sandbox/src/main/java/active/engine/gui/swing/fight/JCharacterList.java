@@ -59,6 +59,8 @@ public class JCharacterList implements CharacterList, ContainerAdapter {
         Map<String, JParticipantLine> newLines = new HashMap<>();
         this.panel.removeAll();
 
+        TableLayout.addRow(this.panel, JParticipantLine.header());
+
         AtomicInteger columns = new AtomicInteger(0);
         data.participants().get()
                 .forEach(named -> {

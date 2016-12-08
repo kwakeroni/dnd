@@ -2,6 +2,7 @@ package active.engine.util.gui.swing;
 
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import java.awt.*;
 import java.util.Optional;
@@ -51,6 +52,11 @@ public class LabelBuilder {
     
     public LabelBuilder background(Color color){
         this.label.get().setBackground(color);
+        return this;
+    }
+
+    public LabelBuilder border(Border border){
+        this.label.get().setBorder(border);
         return this;
     }
 
