@@ -3,17 +3,10 @@ package active.engine.gui.swing.action;
 import active.engine.command.CommandHandler;
 import active.engine.gui.business.IOActions;
 import active.engine.gui.config.Directories;
-import active.engine.gui.swing.ImportFileBuilder;
 import active.engine.gui.swing.SwingConfigProvider;
-import active.io.xml.XMLInput;
-import active.model.fight.Fight;
-import active.model.fight.FightController;
-import active.model.fight.event.FightData;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JFrame;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -30,6 +23,7 @@ public class SwingFightActions {
 
     public static final KeyListener KEY_LISTENER = new KeyListener() {
         private boolean debug = false;
+
         @Override
         public void keyTyped(KeyEvent e) {
             dump("T>", e);
@@ -45,14 +39,14 @@ public class SwingFightActions {
             dump("U>", e);
         }
 
-        private void dump(String prefix, KeyEvent e){
-            if (debug){
+        private void dump(String prefix, KeyEvent e) {
+            if (debug) {
                 System.out.println(prefix + " " + toString(e));
             }
         }
 
-        private String toString(KeyEvent e){
-            return (e.isControlDown()?"ctrl ":"") + (e.isShiftDown()?"shift ":"") + ((char) e.getKeyCode()) + " ("+e.getKeyCode()+")" + " | " + e.getKeyChar() + " (" + ((int) e.getKeyChar()) + ")" ;
+        private String toString(KeyEvent e) {
+            return (e.isControlDown() ? "ctrl " : "") + (e.isShiftDown() ? "shift " : "") + ((char) e.getKeyCode()) + " (" + e.getKeyCode() + ")" + " | " + e.getKeyChar() + " (" + ((int) e.getKeyChar()) + ")";
         }
     };
 
@@ -70,19 +64,19 @@ public class SwingFightActions {
                         .andThen(file -> {
                             SwingConfigProvider.getConfig().set(Directories.IMPORT_PARTY_DIRECTORY, file.getParentFile().toPath());
                             IOActions.importParties(file, handler.get());
-                        } );
+                        });
             }
         };
     }
 
-    public static Action exportFight(Supplier<Component> parent, Supplier<Fight> fight){
-        Action exportAs = exportFightAs(parent, fight);
+    public static Action exportFight(Supplier<Component> parent, Supplier<CommandHandler> handler) {
+        Action exportAs = exportFightAs(parent, handler);
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Optional<File> current = SwingConfigProvider.getLocalProperty(SwingConfigProvider.Local.CURRENT_FIGHT_FILE);
-                if (current.isPresent()){
-                    IOActions.exportFight(current.get(), fight.get());
+                if (current.isPresent()) {
+                    IOActions.exportFight(current.get(), handler.get());
                 } else {
                     exportAs.actionPerformed(e);
                 }
@@ -90,7 +84,7 @@ public class SwingFightActions {
         };
     }
 
-    public static Action exportFightAs(Supplier<Component> parent, Supplier<Fight> fight) {
+    public static Action exportFightAs(Supplier<Component> parent, Supplier<CommandHandler> handler) {
         return new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -102,13 +96,12 @@ public class SwingFightActions {
                         .withStartDirectory(SwingConfigProvider.getConfig().get(Directories.SAVE_FIGHT_DIRECTORY))
                         .andThen(file -> {
                             SwingConfigProvider.getConfig().set(Directories.SAVE_FIGHT_DIRECTORY, file.getParentFile().toPath());
-                            IOActions.exportFight(file, fight.get());
+                            IOActions.exportFight(file, handler.get());
                             SwingConfigProvider.setLocalProperty(SwingConfigProvider.Local.CURRENT_FIGHT_FILE, file);
                         });
             }
         };
     }
-
 
 
 }

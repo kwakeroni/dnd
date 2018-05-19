@@ -1,21 +1,13 @@
 package active.engine.internal.fight;
 
-import java.util.function.Supplier;
-
-import active.engine.channel.ChannelAdapter;
 import active.engine.event.EventBroker;
-import active.engine.event.EventBrokerSupport;
 import active.model.action.Action;
-import active.model.creature.Creature;
 import active.model.creature.Party;
-import active.model.die.Roll;
-import active.model.event.Event;
 import active.model.fight.Fight;
 import active.model.fight.FightController;
 import active.model.fight.Participant;
 import active.model.fight.Turn;
 import active.model.fight.event.ActionExecuted;
-import active.model.fight.event.FightAware;
 import active.model.fight.event.FightEventStream;
 
 /**
@@ -36,10 +28,9 @@ public class DefaultFightController implements FightController {
     @Override
     public void addParty(Party party) {
         party.members()
-            .map(DefaultParticipant::ofCreature)
-            .forEach(this::addParticipant);
+                .map(DefaultParticipant::ofCreature)
+                .forEach(this::addParticipant);
     }
-
 
 
     @Override
@@ -64,26 +55,31 @@ public class DefaultFightController implements FightController {
 
     @Override
     public Turn startTurn() {
-        if (! fight.getCurrentRound().isPresent()){
-            fight.startRound();
-        }
-        return fight.getCurrentRound().get().startTurn();
+        return fight.getCurrentRound()
+                .orElseGet(fight::startRound)
+                .startTurn();
     }
 
     @Override
     public void endTurn() {
-        fight.getCurrentRound().get().endTurn();
+        fight.getCurrentRound().ifPresent(round -> {
+            round.endTurn();
+
+            if (round.isFinished()) {
+                endRound();
+            }
+        });
     }
 
-    public void nextTurn(){
+    public void nextTurn() {
 
-        DefaultRound round = fight.getCurrentRound().orElseGet(() -> fight.startRound());
+        DefaultRound round = fight.getCurrentRound().orElseGet(fight::startRound);
 
-        if (round.getCurrentTurn().isPresent()){
+        if (round.getCurrentTurn().isPresent()) {
             round.endTurn();
         }
 
-        if (round.isFinished()){
+        if (round.isFinished()) {
             endRound();
             round = startRound();
         }

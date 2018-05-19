@@ -14,8 +14,6 @@ import java.util.Properties;
 public class ConfigProvider {
 
 
-
-
     public static Config fromDefaultConfigFileOrInMemoryFallback() {
         try {
             return fromDefaultConfigFile();
@@ -33,7 +31,6 @@ public class ConfigProvider {
 
         } catch (IOException exc) {
             exc.printStackTrace();
-
             return new FileBackedConfig(configFile, createDefaultPropertiesFile(configFile));
         }
     }
@@ -65,7 +62,7 @@ public class ConfigProvider {
         return properties;
     }
 
-    private static Properties defaultProperties(){
+    private static Properties defaultProperties() {
         Properties properties = new Properties();
         return properties;
     }

@@ -11,16 +11,10 @@ import active.model.fight.command.Attack;
 import active.model.fight.event.FightData;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * (C) 2016 Maarten Van Puymbroeck
@@ -32,9 +26,8 @@ public class FightPane implements InteractionHandler, ContainerAdapter, Pluggabl
     private Frame window;
     private final JCharacterList characterList;
     private final JPanel panel;
-    private FightMenu fightMenu;
 
-    public FightPane(FightData fightData){
+    public FightPane(FightData fightData) {
         this.fightData = fightData;
 
         this.panel = new JPanel();
@@ -50,7 +43,7 @@ public class FightPane implements InteractionHandler, ContainerAdapter, Pluggabl
 //        rightPane.add(new LogPane(events).component(), BorderLayout.EAST);
     }
 
-    private CommandHandler getCommandHandler(){
+    private CommandHandler getCommandHandler() {
         return this.commandHandler;
     }
 
@@ -58,17 +51,13 @@ public class FightPane implements InteractionHandler, ContainerAdapter, Pluggabl
     public void activate(GUIController gui) {
         this.commandHandler = gui.getCommandHandler();
         this.window = gui.getAncestorWindow();
-        this.fightMenu = new FightMenu(gui, fightData::getFight);
-        gui.registerMenu(this.fightMenu);
         gui.getCommandHandler().registerContext(InteractionHandler.class, this);
     }
 
     @Override
     public void deactivate(GUIController gui) {
         gui.getCommandHandler().unregisterContext(this);
-        gui.unregisterMenu(this.fightMenu);
         this.commandHandler = null;
-        this.fightMenu = null;
         this.window = null;
     }
 

@@ -1,13 +1,11 @@
 package active.engine.internal.action;
 
-import active.engine.internal.effect.DefaultDamage;
 import active.engine.internal.effect.DefaultHit;
 import active.model.cat.Actor;
 import active.model.cat.Description;
 import active.model.cat.Hittable;
 import active.model.effect.Damage;
 import active.model.effect.Hit;
-import active.model.value.Score;
 
 /**
  * @author Maarten Van Puymbroeck
@@ -29,6 +27,6 @@ public class HitAction extends SimpleAction<Object> {
 
     @Override
     public void describe(Description description) {
-        description.append(this.actor).append(" hits ").append(this.target).append(" for ").append(Score.of(5)).append(" damage");
+        description.append(this.actor).append(" hits ").append(this.target).append(" for ").append(damage.getAmount()).append(" damage");
     }
 }

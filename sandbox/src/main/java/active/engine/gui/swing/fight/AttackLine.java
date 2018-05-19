@@ -1,8 +1,5 @@
 package active.engine.gui.swing.fight;
 
-import static active.engine.gui.swing.support.builder.SwingBuilders.*;
-import static java.util.stream.Collectors.*;
-
 import active.engine.gui.swing.comp.JRollField;
 import active.engine.gui.swing.support.ContainerAdapter;
 import active.engine.gui.swing.support.builder.EventListenerBuilder;
@@ -19,8 +16,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import static active.engine.gui.swing.support.builder.SwingBuilders.label;
+import static active.engine.gui.swing.support.builder.SwingBuilders.textField;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 /**
  * (C) 2016 Maarten Van Puymbroeck
@@ -46,7 +51,7 @@ public class AttackLine implements ContainerAdapter {
         this.components = Collections.unmodifiableList(Arrays.asList(components));
     }
 
-    public Optional<Damage> getDamage(){
+    public Optional<Damage> getDamage() {
         return this.dmg.get();
     }
 
@@ -54,7 +59,7 @@ public class AttackLine implements ContainerAdapter {
         this.atkRoll.react();
     }
 
-    public void rollDamage(){
+    public void rollDamage() {
         this.dmgRoll.react();
     }
 
@@ -74,7 +79,6 @@ public class AttackLine implements ContainerAdapter {
         );
 
 
-
         return new AttackLine(
                 chain.rollField()::roll,
                 chain.damageField()::roll,
@@ -83,20 +87,18 @@ public class AttackLine implements ContainerAdapter {
                 chain.rollField()::component,
                 label(attack.getAttackBonus() + "="),
                 chain::attackField,
-                label("<=>"),
+                label("\u2194"),
                 label(target.getAC()),
                 label("(" + target.getName() + ")"),
                 chain::hitLabel,
-                label(" ==> "),
+                label(" \u21D2 "),
                 chain.damageField()::component
         );
     }
 
     public static AttackLine ofRollAll(Reaction rollAllATK, Reaction rollAllDMG) {
-        JButton atkButton = new JButton("+");
-        atkButton.setMargin(new Insets(2, 2, 2, 2));
-        JButton dmgButton = new JButton("+");
-        dmgButton.setMargin(new Insets(2, 2, 2, 2));
+        JButton atkButton = JRollField.newRollButton("Roll all attacks");
+        JButton dmgButton = JRollField.newRollButton("Roll all damage");
 
         EventListenerBuilder
                 .of(atkButton)
@@ -164,12 +166,12 @@ public class AttackLine implements ContainerAdapter {
                     System.out.println("text value changed");
 
                     boolean hit = parseSafe(attackField.getText())
-                                    .map(i -> i >= target.getAC().toInt())
-                                    .orElse(false);
+                            .map(i -> i >= target.getAC().toInt())
+                            .orElse(false);
 
-                    hitLabel.setText(hit? "HIT" : "miss");
+                    hitLabel.setText(hit ? "HIT" : "miss");
 
-                    if (hit){
+                    if (hit) {
                         damageField.roll();
                     } else {
                         damageField.clear();
@@ -187,11 +189,11 @@ public class AttackLine implements ContainerAdapter {
             return this.attackField;
         }
 
-        public JLabel hitLabel(){
+        public JLabel hitLabel() {
             return this.hitLabel;
         }
 
-        public JRollField<D> damageField(){
+        public JRollField<D> damageField() {
             return this.damageField;
         }
     }
@@ -202,7 +204,7 @@ public class AttackLine implements ContainerAdapter {
                 return Optional.empty();
             }
             return Optional.of(Integer.valueOf(text));
-        } catch (NumberFormatException exc){
+        } catch (NumberFormatException exc) {
             return Optional.empty();
         }
     }

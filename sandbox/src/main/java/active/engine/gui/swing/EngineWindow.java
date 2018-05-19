@@ -1,31 +1,15 @@
 package active.engine.gui.swing;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-
 import active.engine.command.CommandHandler;
 import active.engine.event.EventBroker;
-import active.engine.gui.InteractionHandler;
-import active.engine.gui.swing.action.SwingFightActions;
-import active.engine.gui.swing.fight.*;
-import active.engine.gui.swing.support.ContainerAdapter;
 import active.engine.internal.fight.BattleField;
 import active.engine.util.gui.swing.WindowAdapter;
-import active.model.event.*;
+import active.model.event.Datum;
 import active.model.event.Event;
-import active.model.fight.Participant;
-import active.model.fight.command.Attack;
-import active.model.fight.event.FightData;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.function.Consumer;
 
 public class EngineWindow implements GUIController {
 
@@ -35,37 +19,41 @@ public class EngineWindow implements GUIController {
     private final EventBroker<?> broker;
     private PluggableContent content;
 
-    public EngineWindow(BattleField battleField, CommandHandler appCommandHandler, EventBroker<?> broker){
+    public EngineWindow(BattleField battleField, CommandHandler appCommandHandler, EventBroker<?> broker) {
 
         this.battleField = battleField;
         this.commandHandler = appCommandHandler;
         this.broker = broker;
 
         this.frame = new JFrame();
-        this.frame.setMinimumSize(new Dimension(640,480));
+        this.frame.setMinimumSize(new Dimension(640, 480));
         this.frame.setTitle("Dungeons and Dragons 3.5 Fight Assistant");
         this.frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        this.frame.addWindowListener(WindowAdapter.closing(event -> showCloseDialog()));
+        this.frame.addWindowListener(WindowAdapter.closing(event -> exitWithOptionalDialog()));
 
         this.frame.setJMenuBar(new BaseMenu(this, content()).component());
 
     }
-    
-    public void show(){
+
+    public void show() {
         this.frame.pack();
         this.frame.setVisible(true);
     }
-    
-    private void close(){
+
+    private void close() {
         this.frame.setVisible(false);
         this.frame.dispose();
     }
-    
-    private void showCloseDialog(){
-        int choice = JOptionPane.showOptionDialog(this.frame, "Do you really want to quit ?", "Quit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-        if (choice == JOptionPane.YES_OPTION){
+
+    private void exitWithOptionalDialog() {
+        if (this.content == null || confirmExit()) {
             this.close();
         }
+    }
+
+    private boolean confirmExit() {
+        int choice = JOptionPane.showOptionDialog(this.frame, "Do you really want to quit ?", "Quit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        return choice == JOptionPane.YES_OPTION;
     }
 
     @Override
@@ -97,7 +85,7 @@ public class EngineWindow implements GUIController {
 
     @Override
     public void setContent(PluggableContent content) {
-        if (this.content != null){
+        if (this.content != null) {
             throw new IllegalStateException("Other content already active");
         }
         this.content = content;
@@ -109,7 +97,7 @@ public class EngineWindow implements GUIController {
 
     @Override
     public void clearContent(PluggableContent content) {
-        if (this.content != null && (content == null || this.content.equals(content))){
+        if (this.content != null && (content == null || this.content.equals(content))) {
             JPanel panel = new JPanel();
             panel.setLayout(new BorderLayout());
             this.frame.setContentPane(panel);
@@ -120,7 +108,7 @@ public class EngineWindow implements GUIController {
         }
     }
 
-    private Datum<Object> content(){
+    private Datum<Object> content() {
         return new Datum<Object>() {
             @Override
             public void onChanged(Consumer<Event> consumer) {

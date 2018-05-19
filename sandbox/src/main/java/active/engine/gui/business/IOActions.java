@@ -16,21 +16,26 @@ import java.util.Collection;
  */
 public interface IOActions {
 
-    public static void importParties(File file, CommandHandler handler){
+    public static void importParties(File file, CommandHandler handler) {
         try {
             Collection<Party> parties = XMLInput.readParties(file);
-            for (Party party : parties){
+            for (Party party : parties) {
                 handler.execute(new AddParty(party));
             }
-        } catch (Exception exc){
+        } catch (Exception exc) {
             exc.printStackTrace();
         }
     }
 
-    public static void exportFight(File file, Fight fight){
+    public static void exportFight(File file, CommandHandler handler) {
+        handler.execute(context -> exportFight(file,
+                context.getContext(FightController.class).getState()));
+    }
+
+    private static void exportFight(File file, Fight fight) {
         try {
             XMLOutput.writeToFile(fight, file);
-        } catch (Exception exc){
+        } catch (Exception exc) {
             exc.printStackTrace();
         }
     }
