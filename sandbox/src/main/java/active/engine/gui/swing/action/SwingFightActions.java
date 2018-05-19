@@ -60,9 +60,9 @@ public class SwingFightActions {
                         .forWindow(parent.get())
                         .withTitle("Select Party File")
                         .withButton("Import")
-                        .withStartDirectory(SwingConfigProvider.getConfig().get(Directories.IMPORT_PARTY_DIRECTORY))
+                        .withStartDirectory(SwingConfigProvider.getConfig().get(Directories.PARTY_DIRECTORY))
                         .andThen(file -> {
-                            SwingConfigProvider.getConfig().set(Directories.IMPORT_PARTY_DIRECTORY, file.getParentFile().toPath());
+                            SwingConfigProvider.getConfig().set(Directories.PARTY_DIRECTORY, file.getParentFile().toPath());
                             IOActions.importParties(file, handler.get());
                         });
             }
@@ -93,9 +93,9 @@ public class SwingFightActions {
                         .forWindow(parent.get())
                         .withTitle("Save Fight")
                         .withButton("Save")
-                        .withStartDirectory(SwingConfigProvider.getConfig().get(Directories.SAVE_FIGHT_DIRECTORY))
+                        .withStartDirectory(SwingConfigProvider.getConfig().get(Directories.FIGHT_DIRECTORY))
                         .andThen(file -> {
-                            SwingConfigProvider.getConfig().set(Directories.SAVE_FIGHT_DIRECTORY, file.getParentFile().toPath());
+                            SwingConfigProvider.getConfig().set(Directories.FIGHT_DIRECTORY, file.getParentFile().toPath());
                             IOActions.exportFight(file, handler.get());
                             SwingConfigProvider.setLocalProperty(SwingConfigProvider.Local.CURRENT_FIGHT_FILE, file);
                         });

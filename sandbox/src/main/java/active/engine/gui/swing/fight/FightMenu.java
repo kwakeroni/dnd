@@ -6,11 +6,9 @@ import active.engine.gui.swing.action.SwingBaseActions;
 import active.engine.gui.swing.action.SwingFightActions;
 import active.model.event.Datum;
 import active.model.event.Reaction;
-import active.model.fight.FightController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
 import static active.engine.gui.swing.support.KeySupport.ctrl;
 import static active.engine.gui.swing.support.KeySupport.shift;
@@ -49,6 +47,13 @@ public class FightMenu implements PluggableMenu {
         newFight.setAccelerator(ctrl('N'));
         newFight.setText("New Fight");
 
+        JMenuItem importFight = new JMenuItem("Import Fight...", 'I');
+        fightMenu.add(importFight);
+        importFight.setAction(SwingBaseActions.importFight(gui, this::getParentWindow));
+        importFight.setMnemonic('I');
+        importFight.setText("Import Fight...");
+
+
         JMenuItem endFight = new JMenuItem("End Fight", 'E');
         fightMenu.add(endFight);
         endFight.setAction(SwingBaseActions.endFight(gui));
@@ -70,22 +75,11 @@ public class FightMenu implements PluggableMenu {
         saveFightAs.setAccelerator(ctrl(shift('S')));
         saveFightAs.setText("Save Fight As...");
 
-        JMenuItem logFight = new JMenuItem("Log Fight");
-        fightMenu.add(logFight);
-        logFight.setAction(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                gui.getCommandHandler().execute(context -> {
-                    System.out.println(context.getContext(FightController.class).getState());
-                });
-
-            }
-        });
-
 
         Reaction refreshState = () -> {
             boolean isFight = content.get() != null;
             newFight.setEnabled(content.get() == null);
+            importFight.setEnabled(content.get() == null);
             endFight.setEnabled(isFight);
             saveFight.setEnabled(isFight);
             saveFightAs.setEnabled(isFight);

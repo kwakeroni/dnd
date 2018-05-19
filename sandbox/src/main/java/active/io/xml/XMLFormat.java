@@ -146,6 +146,11 @@ public class XMLFormat {
         return importData().andThen(data -> data.parties);
     }
 
+    public static Function<InputStream, DefaultFight> importFight() {
+        // TODO This cast is not good
+        return importData().andThen(data -> (DefaultFight) data.fight);
+    }
+
     static Consumer<OutputStream> exportData(DndData data){
         return (OutputStream destination) -> INSTANCE.xstream.toXML(data, destination);
     }
