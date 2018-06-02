@@ -6,7 +6,6 @@
 
     <groupId>be.kwakeroni.dnd</groupId>
     <artifactId>dnd-sandbox</artifactId>
-    <packaging>pom</packaging>
     <version>0.0.1-SNAPSHOT</version>
 
     <description>Sandbox engine for DnD stuff.</description>
@@ -19,11 +18,6 @@
     <dependencies>
         <!-- https://mvnrepository.com/artifact/com.thoughtworks.xstream/xstream -->
         <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>1.4.10</version>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
@@ -35,6 +29,32 @@
             <version>3.6.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>engine-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>event</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>ui-base</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>ui-swing</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -43,12 +63,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
+                    <version>3.7.0</version>
                     <configuration>
-                        <release>9</release>
-                        <source>9</source>
-                        <target>9</target>
-                        <encoding>UTF-8</encoding>
+                        <release>${java.version}</release>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>${project.encoding}</encoding>
                     </configuration>
                 </plugin>
                 <plugin>

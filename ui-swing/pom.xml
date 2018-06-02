@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>dnd</artifactId>
+        <groupId>be.kwakeroni.dnd</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ui-swing</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>ui-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>engine-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>util-function</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>be.kwakeroni.dnd</groupId>
+            <artifactId>type</artifactId>
+        </dependency>
+    </dependencies>
+
+
+</project>

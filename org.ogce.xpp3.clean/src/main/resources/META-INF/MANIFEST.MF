@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: smarru (original) and kwakeroni (modified)
+Build-Jdk: 1.7.0_25
+Automatic-Module-Name: org.ogce.xpp3.clean
+
+

@@ -1,0 +1,136 @@
+<dnd-data version="1">
+  <fight round="2">
+    <participant init="18">
+      <creature name="Fred">
+        <stats>
+          <stat name="HP">15</stat>
+          <stat name="AC">21</stat>
+          <stat name="INIT">+3</stat>
+          <stat name="MAX_HP">18</stat>
+        </stats>
+        <actions>
+          <action category="ATTACK" name="Full Attack">
+            <attack name="Bite" bonus="+9">
+              <damage>2D6</damage>
+            </attack>
+            <attack name="Claw" bonus="+4">
+              <damage>D6</damage>
+            </attack>
+            <attack name="Claw" bonus="+4">
+              <damage>D6</damage>
+            </attack>
+          </action>
+          <action category="ATTACK" name="Single Attack">
+            <attack name="Bite" bonus="+9">
+              <damage>2D6</damage>
+            </attack>
+          </action>
+          <action category="ATTACK" name="Ranged Attack">
+            <attack name="Bow" bonus="+5">
+              <damage>D8</damage>
+            </attack>
+          </action>
+        </actions>
+      </creature>
+    </participant>
+    <participant init="15">
+      <creature name="Astoria">
+        <stats>
+          <stat name="HP">2</stat>
+          <stat name="AC">25</stat>
+          <stat name="INIT">+4</stat>
+          <stat name="MAX_HP">16</stat>
+        </stats>
+        <actions>
+          <action category="ATTACK" name="Full Attack">
+            <attack name="Bite" bonus="+9">
+              <damage>2D6</damage>
+            </attack>
+            <attack name="Claw" bonus="+4">
+              <damage>D6</damage>
+            </attack>
+            <attack name="Claw" bonus="+4">
+              <damage>D6</damage>
+            </attack>
+          </action>
+          <action category="ATTACK" name="Single Attack">
+            <attack name="Bite" bonus="+9">
+              <damage>2D6</damage>
+            </attack>
+          </action>
+          <action category="ATTACK" name="Ranged Attack">
+            <attack name="Bow" bonus="+5">
+              <damage>D8</damage>
+            </attack>
+          </action>
+        </actions>
+      </creature>
+    </participant>
+    <participant init="5">
+      <creature name="George">
+        <stats>
+          <stat name="HP">12</stat>
+          <stat name="AC">21</stat>
+          <stat name="INIT">+3</stat>
+          <stat name="MAX_HP">18</stat>
+        </stats>
+        <actions>
+          <action category="ATTACK" name="Full Attack">
+            <attack name="Bite" bonus="+9">
+              <damage>2D6</damage>
+            </attack>
+            <attack name="Claw" bonus="+4">
+              <damage>D6</damage>
+            </attack>
+            <attack name="Claw" bonus="+4">
+              <damage>D6</damage>
+            </attack>
+          </action>
+          <action category="ATTACK" name="Single Attack">
+            <attack name="Bite" bonus="+9">
+              <damage>2D6</damage>
+            </attack>
+          </action>
+          <action category="ATTACK" name="Ranged Attack">
+            <attack name="Bow" bonus="+5">
+              <damage>D8</damage>
+            </attack>
+          </action>
+        </actions>
+      </creature>
+    </participant>
+    <participant init="4">
+      <creature name="Lucius">
+        <stats>
+          <stat name="HP">22</stat>
+          <stat name="AC">19</stat>
+          <stat name="INIT">+2</stat>
+          <stat name="MAX_HP">22</stat>
+        </stats>
+        <actions>
+          <action category="ATTACK" name="Full Attack">
+            <attack name="Bite" bonus="+9">
+              <damage>2D6</damage>
+            </attack>
+            <attack name="Claw" bonus="+4">
+              <damage>D6</damage>
+            </attack>
+            <attack name="Claw" bonus="+4">
+              <damage>D6</damage>
+            </attack>
+          </action>
+          <action category="ATTACK" name="Single Attack">
+            <attack name="Bite" bonus="+9">
+              <damage>2D6</damage>
+            </attack>
+          </action>
+          <action category="ATTACK" name="Ranged Attack">
+            <attack name="Bow" bonus="+5">
+              <damage>D8</damage>
+            </attack>
+          </action>
+        </actions>
+      </creature>
+    </participant>
+  </fight>
+</dnd-data>

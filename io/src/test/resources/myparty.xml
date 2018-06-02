@@ -1,0 +1,66 @@
+<dnd-data version="1">
+  <party name="ours">
+    <member name="Fred">
+      <stats>
+        <stat name="HP">18</stat>
+        <stat name="AC">21</stat>
+        <stat name="INIT">+3</stat>
+        <stat name="MAX_HP">18</stat>
+      </stats>
+      <actions>
+        <action name="Full Attack" category="ATTACK">
+          <attack name="Bite" bonus="+9">
+            <damage>2D6</damage>
+          </attack>
+          <attack name="Claw" bonus="+4">
+            <damage>D6</damage>
+          </attack>
+          <attack name="Claw" bonus="+4">
+            <damage>D6</damage>
+          </attack>
+        </action>
+        <action name="Single Attack" category="ATTACK">
+          <attack name="Bite" bonus="+9">
+            <damage>2D6</damage>
+          </attack>
+        </action>
+        <action name="Ranged Attack" category="ATTACK">
+          <attack name="Bow" bonus="+5">
+            <damage>D8</damage>
+          </attack>
+        </action>
+      </actions>
+    </member>
+    <member name="George">
+      <stats>
+        <stat name="HP">18</stat>
+        <stat name="AC">21</stat>
+        <stat name="INIT">+3</stat>
+        <stat name="MAX_HP">18</stat>
+      </stats>
+      <actions>
+        <action name="Full Attack" category="ATTACK">
+          <attack name="Bite" bonus="+9">
+            <damage>2D6</damage>
+          </attack>
+          <attack name="Claw" bonus="+4">
+            <damage>D6</damage>
+          </attack>
+          <attack name="Claw" bonus="+4">
+            <damage>D6</damage>
+          </attack>
+        </action>
+        <action name="Single Attack" category="ATTACK">
+          <attack name="Bite" bonus="+9">
+            <damage>2D6</damage>
+          </attack>
+        </action>
+        <action name="Ranged Attack" category="ATTACK">
+          <attack name="Bow" bonus="+5">
+            <damage>D8</damage>
+          </attack>
+        </action>
+      </actions>
+    </member>
+  </party>
+</dnd-data>
