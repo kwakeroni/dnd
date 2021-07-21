@@ -1,9 +1,11 @@
 package be.kwakeroni.dnd.type.value;
 
 /**
- * @author Maarten Van Puymbroeck
+ *  * @author Maarten Van Puymbroeck
  */
 public final /* value */ class Modifier implements Comparable<Modifier> {
+
+    public static final Modifier ZERO = Modifier.of(0);
 
     private final int modifier;
 
@@ -20,15 +22,26 @@ public final /* value */ class Modifier implements Comparable<Modifier> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        return (this == o) ||
+                o instanceof Modifier other
+                && this.modifier == other.modifier;
+    }
+
+    @Override
+    public int hashCode() {
+        return modifier;
+    }
+
+    @Override
     public int compareTo(Modifier o) {
-        return (this.modifier == o.modifier)? 0 :
-                    (this.modifier < o.modifier)? -1 : 1;
+        return Integer.compare(this.modifier, o.modifier);
     }
 
     @Override
     public String toString() {
         return
-            ((modifier < 0)? "-" : "+") + String.valueOf(modifier);
+            (modifier <= 0)? String.valueOf(modifier) : "+" + modifier;
     }
 
     public static Modifier fromString(String value){

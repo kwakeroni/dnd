@@ -20,6 +20,12 @@ public enum Prop implements Statistic<Score> {
         return Prop.class;
     }
 
+
+    @Override
+    public Score baseline() {
+        return Score.ZERO;
+    }
+
     @Override
     public Score fromString(String value) {
         return Score.fromString(value);

@@ -3,10 +3,14 @@ package be.kwakeroni.dnd.type.value;
 import be.kwakeroni.dnd.type.base.Describable;
 import be.kwakeroni.dnd.type.base.Description;
 
+import java.util.Objects;
+
 /**
  * @author Maarten Van Puymbroeck
  */
 public final /* value */ class Score implements Describable, Comparable<Score> {
+
+    public static final Score ZERO = Score.of(0);
 
     private final int score;
 
@@ -21,15 +25,42 @@ public final /* value */ class Score implements Describable, Comparable<Score> {
     public int toInt(){
         return this.score;
     }
-    
+
+    public Score modify(Modifier modifier) {
+        return this.plus(modifier.toInt());
+    }
+
+    public Score plus(int other) {
+        return Score.of(this.score + other);
+    }
+
+    public Score plus(Score other) {
+        return plus(other.score);
+    }
+
+    public Score minus(int other) {
+        return Score.of(this.score - other);
+    }
+
     public Score minus(Score other){
-        return Score.of(this.score - other.score);
+        return minus(other.score);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (this == o) ||
+                (o instanceof Score other)
+                && score == other.score;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(score);
     }
 
     @Override
     public int compareTo(Score o) {
-        return (this.score == o.score)? 0 :
-                    (this.score < o.score)? -1 : 1;
+        return Integer.compare(this.score, o.score);
     }
 
     @Override

@@ -20,6 +20,12 @@ public enum Mod implements Statistic<Modifier> {
         return Mod.class;
     }
 
+
+    @Override
+    public Modifier baseline() {
+        return Modifier.ZERO;
+    }
+
     @Override
     public Modifier fromString(String value) {
         return Modifier.fromString(value);

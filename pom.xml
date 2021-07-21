@@ -21,10 +21,11 @@
         <module>ui-base</module>
         <module>ui-swing</module>
         <module>util-function</module>
+        <module>creature</module>
     </modules>
 
     <properties>
-        <java.version>9</java.version>
+        <java.version>16</java.version>
         <project.encoding>UTF-8</project.encoding>
     </properties>
 
@@ -77,9 +78,27 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.7.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.7.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.6.1</version>
+                <version>3.20.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>3.11.2</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -91,11 +110,11 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <release>${java.version}</release>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
+<!--                        <source>${java.version}</source>-->
+<!--                        <target>${java.version}</target>-->
                         <encoding>${project.encoding}</encoding>
                     </configuration>
                 </plugin>

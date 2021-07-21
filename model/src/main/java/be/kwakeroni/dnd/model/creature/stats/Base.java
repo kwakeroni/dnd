@@ -14,30 +14,40 @@ public final class Base {
     }
 
     static Class<Base> initialized(){
-        Statistics.addAll(RawBase.class);
+        Statistics.addAll(Stat.class);
         return Base.class;
     }
 
-    public static Statistic<String> NAME = RawBase.NAME;
-    public static Statistic<Score> HP = RawBase.HP;
-    public static Statistic<Score> MAX_HP = RawBase.MAX_HP;
+    @SuppressWarnings("unchecked")
+    public static Statistic<String> NAME = Stat.NAME;
+    @SuppressWarnings("unchecked")
+    public static Statistic<Score> HP = Stat.HP;
+    @SuppressWarnings("unchecked")
+    public static Statistic<Score> MAX_HP = Stat.MAX_HP;
 
     private Base(){
 
     }
 
     @SuppressWarnings("rawtypes")
-    enum RawBase implements Statistic {
-        NAME(Function.identity()),
-        HP(Score::fromString),
-        MAX_HP(Score::fromString);
+    enum Stat implements Statistic {
+        NAME("", Function.identity()),
+        HP(Score.ZERO, Score::fromString),
+        MAX_HP(Score.ZERO, Score::fromString);
 
+        private final Object baseline;
         private final Function<String, ?>  fromString;
 
-        RawBase(Function<String, ?> fromString) {
+        <S> Stat(S baseline, Function<String, S> fromString) {
+            this.baseline = baseline;
             this.fromString = fromString;
         }
 
+
+        @Override
+        public Object baseline() {
+            return baseline;
+        }
 
         @Override
         public Object fromString(String value) {
